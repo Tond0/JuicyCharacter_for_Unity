@@ -67,6 +67,7 @@ public class Jump : Air
 
             case JumpState.Top:
 
+                acceleration_Multiplaier = 1.4f;
                 gravityMultiplaier = stats.GravityMultiplaier_TopHeight;
                 checkGround = true;
 
@@ -77,6 +78,7 @@ public class Jump : Air
 
             case JumpState.Descending:
 
+                acceleration_Multiplaier = 1;
                 gravityMultiplaier = stats.GravityMultiplaier_Descending;
 
                 break;

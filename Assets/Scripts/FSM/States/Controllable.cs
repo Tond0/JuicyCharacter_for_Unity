@@ -6,6 +6,7 @@ public abstract class Controllable : PlayerState
 {
     protected Vector2 direction;
     protected PlayerStats.MovementStats movementStats;
+    protected float acceleration_Multiplaier = 1;
 
     protected PlayerStats stats;
 
@@ -24,7 +25,6 @@ public abstract class Controllable : PlayerState
         base.Enter();
 
         InputManager.OnMoveFired += (Vector2 direction) => this.direction = direction;
-
         
         rb = stats.Rb;
     }
@@ -47,28 +47,29 @@ public abstract class Controllable : PlayerState
     }
 
     #region GroundCheck
-    protected bool CheckGround(Transform transform, float heightOffset, float wideCheckBuffer, float heightCheckBuffer, out RaycastHit rayHit)
+    protected bool CheckGround(Transform transform, PlayerStats.GroundCheck_Stats groundCheck_stats, out RaycastHit rayHit)
     {
         //Siccome deve stare in piedi la forza andrà verso l'alto
         Vector3 springDir = transform.up;
 
-        Vector3 origin = transform.position + (heightOffset * Vector3.up);
+        Vector3 origin = transform.position + (groundCheck_stats.HeightOffset * Vector3.up);
 
-        Vector3 cubeCenter = new(origin.x, origin.y - heightCheckBuffer / 2, origin.z);
+        //Old version
+        //Vector3 cubeCenter = new(origin.x, origin.y - groundCheck_stats.HeightCheckBuffer / 2, origin.z);
         //Vector3 size = new(wideCheckBuffer, heightCheckBuffer, wideCheckBuffer);
-        Vector3 size = wideCheckBuffer * Vector3.one;
+        //Vector3 size = groundCheck_stats.WideCheckBuffer * Vector3.one;
 
         //Spariamo 5 raycast in 5 posizioni diverse per il controllo del terreno
         //Centro
-        if (Physics.Raycast(origin, -springDir, out rayHit, heightCheckBuffer)) return true;
+        if (Physics.Raycast(origin, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
         //Destra
-        if (Physics.Raycast(origin + Vector3.right * wideCheckBuffer / 2, -springDir, out rayHit, heightCheckBuffer)) return true;
+        if (Physics.Raycast(origin + Vector3.right * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
         //Sinistra
-        if (Physics.Raycast(origin - Vector3.right * wideCheckBuffer / 2, -springDir, out rayHit, heightCheckBuffer)) return true;
+        if (Physics.Raycast(origin - Vector3.right * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
         //Di fronte
-        if (Physics.Raycast(origin + Vector3.forward * wideCheckBuffer / 2, -springDir, out rayHit, heightCheckBuffer)) return true;
+        if (Physics.Raycast(origin + Vector3.forward * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
         //Dietro
-        if (Physics.Raycast(origin - Vector3.forward * wideCheckBuffer / 2, -springDir, out rayHit, heightCheckBuffer)) return true;
+        if (Physics.Raycast(origin - Vector3.forward * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
 
         //bool isGrounded = Physics.BoxCast(origin, size / 2, -springDir, out rayHit, Quaternion.identity, heightCheckBuffer);
         //bool isGrounded = Physics.OverlapBox(cubeCenter, size / 2, Quaternion.identity, groundMask, QueryTriggerInteraction.Ignore);
@@ -76,19 +77,19 @@ public abstract class Controllable : PlayerState
         return false;
     }
 
-    protected bool CheckGround(Transform transform, float heightOffset, float wideCheckBuffer, float heightCheckBuffer)
+    protected bool CheckGround(Transform transform, PlayerStats.GroundCheck_Stats groundCheck_stats)
     {
         //Siccome deve stare in piedi la forza andrà verso l'alto
         Vector3 springDir = transform.up;
 
-        Vector3 origin = transform.position + (heightOffset * Vector3.up);
+        Vector3 origin = transform.position + (groundCheck_stats.HeightOffset * Vector3.up);
         Ray standingRay = new(origin, -springDir);
-        Vector3 size = wideCheckBuffer * Vector3.one;
+        Vector3 size = groundCheck_stats.WideCheckBuffer * Vector3.one;
 
         //bool isGrounded = Physics.Raycast(standingRay, out RaycastHit rayHit, heightCheckBuffer);
-        bool isGrounded = Physics.BoxCast(origin, size / 2, -springDir, Quaternion.identity, heightCheckBuffer);
+        bool isGrounded = Physics.BoxCast(origin, size / 2, -springDir, Quaternion.identity, groundCheck_stats.HeightCheckBuffer);
 
-        Debug.DrawRay(origin, -springDir * heightCheckBuffer, Color.red);
+        Debug.DrawRay(origin, -springDir * groundCheck_stats.HeightCheckBuffer, Color.red);
 
         return isGrounded;
     }
@@ -118,7 +119,7 @@ public abstract class Controllable : PlayerState
         }
 
         // Calcola la variazione massima della velocità in questo frame
-        float maxSpeedChange = maxAcceleration * Time.deltaTime;
+        float maxSpeedChange = maxAcceleration * Time.deltaTime * acceleration_Multiplaier;
 
         // Aggiorna la velocità corrente verso la velocità desiderata
         Vector3 finalVelocity = Vector3.MoveTowards(currentVelocity, desireVelocity, maxSpeedChange);

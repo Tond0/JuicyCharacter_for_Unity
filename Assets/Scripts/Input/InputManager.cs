@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,6 +25,9 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
         inputAction = new();
         inputAction.Enable();
         inputAction.Gameplay.SetCallbacks(this);
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnDisable()

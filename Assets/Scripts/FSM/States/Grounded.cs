@@ -13,8 +13,8 @@ public abstract class Grounded : Controllable
     {
         base.FixedRun();
 
-        if (CheckGround(stats.transform, stats.HeightOffset, stats.WideCheckBuffer, stats.HeightCheckBuffer, out RaycastHit rayHit))
-            Float(stats.transform, stats.Rb, rayHit, stats.Height, stats.DampingForce, stats.SpringStrength);
+        if (CheckGround(stats.transform, stats.GroundCheck_Grounded, out RaycastHit rayHit))
+            Float(stats.transform, stats.Rb, rayHit, stats.GroundCheck_Grounded.Height, stats.GroundCheck_Grounded.DampingForce, stats.GroundCheck_Grounded.SpringStrength);
         else
             nextState = new Air(stateComponent, direction, stats.Movement_Air);
     }
