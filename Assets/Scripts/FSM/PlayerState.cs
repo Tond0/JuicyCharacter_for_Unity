@@ -9,7 +9,7 @@ public abstract class PlayerState
     protected PlayerState nextState;
     protected StateComponent stateComponent;
     protected Stopwatch stopwatch_state = new();
-    public float StateDuration { get { return (float)stopwatch_state.Elapsed.Milliseconds; } }
+    public float StateDuration { get { return (float)stopwatch_state.Elapsed.TotalSeconds; } }
     protected PlayerState(StateComponent stateComponent)
     {
         this.stateComponent = stateComponent;

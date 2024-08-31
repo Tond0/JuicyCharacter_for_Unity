@@ -1439,15 +1439,13 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   gravityForce: -9.81
-  jumpForce: 0.8
-  jumpForceDuration: 0.4
-  gravityChange:
-  - gravityMultiplaier: 1.4
-    duration: 0.5
-  - gravityMultiplaier: 0.15
-    duration: 0.5
-  - gravityMultiplaier: 5
-    duration: 0.4
+  jumpForce: 8
+  maxJumpForceDuration: 0.5
+  minJumpForceDuration: 0.3
+  gravityMultiplaier_Ascending: 1.4
+  gravityMultiplaier_InputReleased: 1.4
+  gravityMultiplaier_TopHeight: 0.8
+  gravityMultiplaier_Descending: 2
 --- !u!54 &1659147474
 Rigidbody:
   m_ObjectHideFlags: 0

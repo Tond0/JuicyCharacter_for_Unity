@@ -22,8 +22,13 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private float gravityForce = -9.81f;
     [Header("Jump")]
     [SerializeField] private float jumpForce;
-    [SerializeField] private float jumpForceDuration;
-    [SerializeField] private GravityStats[] gravityChange;
+    [SerializeField] private float maxJumpForceDuration;
+    [SerializeField] private float minJumpForceDuration;
+    [Space(5)]
+    [SerializeField] private float gravityMultiplaier_Ascending;
+    [SerializeField] private float gravityMultiplaier_InputReleased;
+    [SerializeField] private float gravityMultiplaier_TopHeight;
+    [SerializeField] private float gravityMultiplaier_Descending;
 
     #region Getter
     //Components
@@ -43,9 +48,13 @@ public class PlayerStats : MonoBehaviour
     
     //Jump
     public float JumpForce { get => jumpForce; }
-    public float JumpForceDuration { get => jumpForceDuration; }
+    public float MaxJumpForceDuration { get => maxJumpForceDuration; }
+    public float MinJumpForceDuration { get => minJumpForceDuration; }
     public float GravityForce { get => gravityForce; }
-    public GravityStats[] GravityChange { get => gravityChange; }
+    public float GravityMultiplaier_Ascending { get => gravityMultiplaier_Ascending; }
+    public float GravityMultiplaier_InputReleased { get => gravityMultiplaier_InputReleased; }
+    public float GravityMultiplaier_TopHeight { get => gravityMultiplaier_TopHeight; }
+    public float GravityMultiplaier_Descending { get => gravityMultiplaier_Descending; }
     #endregion
 
     private void OnDrawGizmosSelected()
@@ -73,14 +82,5 @@ public class PlayerStats : MonoBehaviour
         public float MaxAcceleration { get => maxAcceleration; }
         public float MaxDeceleration { get => maxDeceleration; }
         public AnimationCurve AccelerationFactor { get => accelerationFactor; }
-    }
-
-    [Serializable] public struct GravityStats
-    {
-        [SerializeField] private float gravityMultiplaier;
-        [SerializeField] private float duration;
-
-        public float GravityMultiplaier { get => gravityMultiplaier; }
-        public float Duration { get => duration; }
     }
 }

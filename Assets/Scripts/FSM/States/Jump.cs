@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Timers;
+using UnityEditor.SceneTemplate;
 using UnityEngine;
 
 public class Jump : Air
@@ -9,7 +10,8 @@ public class Jump : Air
     private bool wantToJump = true;
     private Timer timer_jumpForceDuration;
 
-    private Coroutine co_changeGravityMultiplaier;
+    private enum JumpState { Ascending, Top, Descending  };
+    private JumpState jumpState = JumpState.Ascending;
     public Jump(StateComponent stateComponent, Vector3 startDirection, PlayerStats.MovementStats movementStats) : base(stateComponent, startDirection, movementStats)
     {
     }
@@ -20,22 +22,26 @@ public class Jump : Air
 
         InputManager.OnJumpReleased += () => wantToJump = false;
 
-        Vector3 app_velocity = stats.Rb.velocity;
-        app_velocity.y = 0;
-        stats.Rb.velocity = app_velocity;
 
+        //Do not check the ground while we're ascending
         checkGround = false;
 
         //Timer for input jumpForce duration
-        timer_jumpForceDuration = new Timer(stats.JumpForceDuration * 1000);
+        timer_jumpForceDuration = new Timer(stats.MaxJumpForceDuration * 1000);
         timer_jumpForceDuration.Elapsed += (object sender, ElapsedEventArgs e) =>
             {
-                wantToJump = false; 
-                checkGround = true; 
+                wantToJump = false;
+                checkGround = true;
             };
         timer_jumpForceDuration.Start();
 
-        co_changeGravityMultiplaier = stateComponent.StartCoroutine(TimedGravityChange(stats.GravityChange));
+        //First set of gravity
+        gravityMultiplaier = stats.GravityMultiplaier_Ascending;
+
+        //Let's Jump! Force up!
+        Vector3 app_velocity = stats.Rb.velocity;
+        app_velocity.y = stats.JumpForce;
+        stats.Rb.velocity = app_velocity;
     }
 
     public override void Exit()
@@ -43,39 +49,37 @@ public class Jump : Air
         base.Exit();
 
         InputManager.OnJumpReleased -= () => wantToJump = false;
-
-        stateComponent.StopCoroutine(co_changeGravityMultiplaier);
-    }
-
-    private IEnumerator TimedGravityChange(PlayerStats.GravityStats[] gravityChanges)
-    {
-        for(int i = 0; i < gravityChanges.Length; i++)
-        {
-            yield return new WaitForSeconds(gravityChanges[i].Duration);
-            gravityMultiplaier = gravityChanges[i].GravityMultiplaier;
-        }
-    }
-
-    public override PlayerState Run()
-    {
-        return base.Run();
     }
 
     public override void FixedRun()
     {
         base.FixedRun();
 
-        DoJump();
-    }
+        switch (jumpState)
+        {
+            case JumpState.Ascending:
 
-    private void DoJump()
-    {
-        if (!wantToJump) return;
+                if (StateDuration >= stats.MaxJumpForceDuration
+                    || (StateDuration >= stats.MinJumpForceDuration && !wantToJump))
+                    jumpState = JumpState.Top;
 
-        Vector3 velocity = stats.Rb.velocity;
+                break;
 
-        velocity.y += stats.JumpForce;
+            case JumpState.Top:
 
-        stats.Rb.velocity = velocity;
+                gravityMultiplaier = stats.GravityMultiplaier_TopHeight;
+                checkGround = true;
+
+                if (stats.Rb.velocity.y < -1)
+                    jumpState = JumpState.Descending;
+
+                break;
+
+            case JumpState.Descending:
+
+                gravityMultiplaier = stats.GravityMultiplaier_Descending;
+
+                break;
+        }
     }
 }
