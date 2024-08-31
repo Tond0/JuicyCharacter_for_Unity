@@ -45,4 +45,5 @@ public class StateComponent : MonoBehaviour
 
         currentState.Enter();
     }
+
 }

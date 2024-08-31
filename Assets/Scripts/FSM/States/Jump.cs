@@ -8,6 +8,8 @@ public class Jump : Air
 {
     private bool wantToJump = true;
     private Timer timer_jumpForceDuration;
+
+    private Coroutine co_changeGravityMultiplaier;
     public Jump(StateComponent stateComponent, Vector3 startDirection, PlayerStats.MovementStats movementStats) : base(stateComponent, startDirection, movementStats)
     {
     }
@@ -18,9 +20,13 @@ public class Jump : Air
 
         InputManager.OnJumpReleased += () => wantToJump = false;
 
+        Vector3 app_velocity = stats.Rb.velocity;
+        app_velocity.y = 0;
+        stats.Rb.velocity = app_velocity;
+
         checkGround = false;
 
-        //Timer
+        //Timer for input jumpForce duration
         timer_jumpForceDuration = new Timer(stats.JumpForceDuration * 1000);
         timer_jumpForceDuration.Elapsed += (object sender, ElapsedEventArgs e) =>
             {
@@ -28,6 +34,8 @@ public class Jump : Air
                 checkGround = true; 
             };
         timer_jumpForceDuration.Start();
+
+        co_changeGravityMultiplaier = stateComponent.StartCoroutine(TimedGravityChange(stats.GravityChange));
     }
 
     public override void Exit()
@@ -35,6 +43,22 @@ public class Jump : Air
         base.Exit();
 
         InputManager.OnJumpReleased -= () => wantToJump = false;
+
+        stateComponent.StopCoroutine(co_changeGravityMultiplaier);
+    }
+
+    private IEnumerator TimedGravityChange(PlayerStats.GravityStats[] gravityChanges)
+    {
+        for(int i = 0; i < gravityChanges.Length; i++)
+        {
+            yield return new WaitForSeconds(gravityChanges[i].Duration);
+            gravityMultiplaier = gravityChanges[i].GravityMultiplaier;
+        }
+    }
+
+    public override PlayerState Run()
+    {
+        return base.Run();
     }
 
     public override void FixedRun()
@@ -42,12 +66,6 @@ public class Jump : Air
         base.FixedRun();
 
         DoJump();
-        DoCustomGravity();
-    }
-
-    private void DoCustomGravity()
-    {
-        
     }
 
     private void DoJump()

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Air : Controllable
 {
-    protected float gravityMultiplaier;
+    protected float gravityMultiplaier = 1;
     public Air(StateComponent stateComponent, Vector3 startDirection, PlayerStats.MovementStats movementStats) : base(stateComponent, startDirection, movementStats)
     {
     }

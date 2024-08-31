@@ -150,8 +150,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 1, y: 0.8, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1402288158}
   m_Father: {fileID: 1659147471}
@@ -634,7 +634,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.32, y: 2.38, z: 0.84999996}
+  m_LocalPosition: {x: -1.32, y: 2.13, z: 0.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -911,9 +911,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1402288157}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.49999976, z: 0.422}
-  m_LocalScale: {x: 0.46849945, y: 0.19721884, z: 0.28775278}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.31250015, z: 0.5}
+  m_LocalScale: {x: 0.46849945, y: 0.24652354, z: 0.28775278}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 274357191}
@@ -1359,8 +1359,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 1659147474}
   height: 1
-  heightOffset: 0.6
-  heightCheckBuffer: 2.5
+  heightOffset: 0.5
+  heightCheckBuffer: 1.3
   wideCheckBuffer: 1
   springStrength: 50
   dampingForce: -4
@@ -1440,14 +1440,14 @@ MonoBehaviour:
       m_RotationOrder: 4
   gravityForce: -9.81
   jumpForce: 0.8
-  jumpForceDuration: 0.3
+  jumpForceDuration: 0.4
   gravityChange:
   - gravityMultiplaier: 1.4
-    duration: 0.3
-  - gravityMultiplaier: 0.5
-    duration: 0.2
-  - gravityMultiplaier: 2
-    duration: 0.8
+    duration: 0.5
+  - gravityMultiplaier: 0.15
+    duration: 0.5
+  - gravityMultiplaier: 5
+    duration: 0.4
 --- !u!54 &1659147474
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1470,7 +1470,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
@@ -1495,9 +1495,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1.7
+  m_Height: 1.6330845
   m_Direction: 1
-  m_Center: {x: 0, y: 1.2, z: 0}
+  m_Center: {x: 0, y: 0.99845266, z: 0}
 --- !u!1 &1705856040
 GameObject:
   m_ObjectHideFlags: 3
@@ -1560,7 +1560,7 @@ MonoBehaviour:
   m_VerticalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 150
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse Y
@@ -1584,7 +1584,7 @@ MonoBehaviour:
   m_HorizontalAxis:
     Value: 0
     m_SpeedMode: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 150
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse X
@@ -1619,7 +1619,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 1.5, z: 0.2}
+  m_FollowOffset: {x: 0, y: 1.25, z: 0.3}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -1867,7 +1867,7 @@ Transform:
   m_GameObject: {fileID: 2030408373}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.32, y: 2.38, z: 0.84999996}
+  m_LocalPosition: {x: -1.32, y: 2.13, z: 0.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

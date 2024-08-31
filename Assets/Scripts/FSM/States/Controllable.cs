@@ -21,6 +21,8 @@ public abstract class Controllable : PlayerState
 
     public override void Enter()
     {
+        base.Enter();
+
         InputManager.OnMoveFired += (Vector2 direction) => this.direction = direction;
 
         

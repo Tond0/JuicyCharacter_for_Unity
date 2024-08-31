@@ -45,6 +45,7 @@ public class PlayerStats : MonoBehaviour
     public float JumpForce { get => jumpForce; }
     public float JumpForceDuration { get => jumpForceDuration; }
     public float GravityForce { get => gravityForce; }
+    public GravityStats[] GravityChange { get => gravityChange; }
     #endregion
 
     private void OnDrawGizmosSelected()
@@ -61,8 +62,7 @@ public class PlayerStats : MonoBehaviour
         Gizmos.DrawRay(origin - Vector3.forward * wideCheckBuffer / 2, -springDir * heightCheckBuffer);
     }
 
-    [Serializable]
-    public class MovementStats
+    [Serializable] public class MovementStats
     {
         [SerializeField] private float maxSpeed;
         [SerializeField] private float maxAcceleration;
@@ -75,8 +75,7 @@ public class PlayerStats : MonoBehaviour
         public AnimationCurve AccelerationFactor { get => accelerationFactor; }
     }
 
-    [Serializable]
-    public struct GravityStats
+    [Serializable] public struct GravityStats
     {
         [SerializeField] private float gravityMultiplaier;
         [SerializeField] private float duration;
