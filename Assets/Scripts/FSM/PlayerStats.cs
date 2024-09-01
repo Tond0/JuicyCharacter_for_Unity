@@ -17,14 +17,16 @@ public class PlayerStats : MonoBehaviour
     [Header("Air")]
     [SerializeField] private float gravityForce = -9.81f;
     [Header("Jump")]
-    [SerializeField] private float jumpForce;
-    [SerializeField] private float maxJumpForceDuration;
-    [SerializeField] private float minJumpForceDuration;
-    [SerializeField] private float coyoteTime;
+    [SerializeField, Range(0, 100)] private float jumpForce;
+    [SerializeField, Range(0, 100)] private float maxJumpForceDuration;
+    [SerializeField, Range(0, 100)] private float minJumpForceDuration;
+    [SerializeField, Range(1,50)] private float airTime_HorizontalBoost;
+    [SerializeField, Range(0, 10)] private float coyoteTime;
     [Space(5)]
-    [SerializeField] private float gravityMultiplaier_Ascending;
-    [SerializeField] private float gravityMultiplaier_TopHeight;
-    [SerializeField] private float gravityMultiplaier_Descending;
+    [SerializeField, Range(0, 50)] private float gravityMultiplaier_Ascending;
+    [SerializeField, Range(0, 50)] private float gravityMultiplaier_InputReleased;
+    [SerializeField, Range(0, 50)] private float gravityMultiplaier_TopHeight;
+    [SerializeField, Range(0, 50)] private float gravityMultiplaier_Descending;
     [Space(20)]
     [Header("Debug")]
     [SerializeField] private StateComponent stateComponent;
@@ -48,8 +50,10 @@ public class PlayerStats : MonoBehaviour
     public float GravityForce { get => gravityForce; }
     public float CoyoteTime { get => coyoteTime; }
     public float GravityMultiplaier_Ascending { get => gravityMultiplaier_Ascending; }
+    public float GravityMultiplaier_InputReleased { get => gravityMultiplaier_InputReleased; }
     public float GravityMultiplaier_TopHeight { get => gravityMultiplaier_TopHeight; }
     public float GravityMultiplaier_Descending { get => gravityMultiplaier_Descending; }
+    public float AirTime_HorizontalBoost { get => airTime_HorizontalBoost; }
     #endregion
 
     private void OnDrawGizmosSelected()

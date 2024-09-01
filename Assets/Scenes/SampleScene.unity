@@ -1359,12 +1359,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rb: {fileID: 1659147474}
   groundCheck_Grounded:
-    height: 1
-    heightOffset: 0.5
-    heightCheckBuffer: 2.5
+    height: 1.1
+    heightOffset: 0.8
+    heightCheckBuffer: 3.5
     wideCheckBuffer: 1
-    springStrength: 50
-    dampingForce: -4
+    springStrength: 300
+    dampingForce: -20
   groundCheck_Air:
     height: 1
     heightOffset: 0.5
@@ -1448,10 +1448,12 @@ MonoBehaviour:
       m_RotationOrder: 4
   gravityForce: -9.81
   jumpForce: 8
-  maxJumpForceDuration: 0.5
-  minJumpForceDuration: 0.3
-  coyoteTime: 0.3
+  maxJumpForceDuration: 0.6
+  minJumpForceDuration: 0.05
+  airTime_HorizontalBoost: 2
+  coyoteTime: 0.15
   gravityMultiplaier_Ascending: 1.4
+  gravityMultiplaier_InputReleased: 2.3
   gravityMultiplaier_TopHeight: 0.8
   gravityMultiplaier_Descending: 2
   stateComponent: {fileID: 1659147472}

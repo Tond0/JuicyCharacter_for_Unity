@@ -59,28 +59,41 @@ public class Jump : Air
         {
             case JumpState.Ascending:
 
-                if (StateDuration >= stats.MaxJumpForceDuration
-                    || (StateDuration >= stats.MinJumpForceDuration && !wantToJump))
+                if(StateDuration >= stats.MinJumpForceDuration && !wantToJump)
+                {
+                    //Boost speed
+                    acceleration_Multiplaier = stats.AirTime_HorizontalBoost;
+                    //Apply top height gravity
+                    gravityMultiplaier = stats.GravityMultiplaier_InputReleased;
+                }
+                else if (StateDuration >= stats.MaxJumpForceDuration)
+                {
                     jumpState = JumpState.Top;
+                    
+                    //Boost speed
+                    acceleration_Multiplaier = stats.AirTime_HorizontalBoost;
+                    //Apply top height gravity
+                    gravityMultiplaier = stats.GravityMultiplaier_TopHeight;
+                    
+                    checkGround = true;
+                }
 
                 break;
 
             case JumpState.Top:
 
-                acceleration_Multiplaier = 1.4f;
-                gravityMultiplaier = stats.GravityMultiplaier_TopHeight;
-                checkGround = true;
 
-                if (stats.Rb.velocity.y < -1)
+                if (stats.Rb.velocity.y < 0)
+                {
                     jumpState = JumpState.Descending;
+                    acceleration_Multiplaier = 1;
+                    gravityMultiplaier = stats.GravityMultiplaier_Descending;
+                }
 
                 break;
 
+            //Nothing to do, just wait to fully descend
             case JumpState.Descending:
-
-                acceleration_Multiplaier = 1;
-                gravityMultiplaier = stats.GravityMultiplaier_Descending;
-
                 break;
         }
     }
