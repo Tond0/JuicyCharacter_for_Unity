@@ -1373,9 +1373,47 @@ MonoBehaviour:
     springStrength: 50
     dampingForce: -4
   movement_Ground:
-    maxSpeed: 18
+    maxSpeed: 10
     maxAcceleration: 18
     maxDeceleration: 35
+    accelerationFactor:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 4
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.5
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  minSpeedToSprint: 4
+  movement_Sprint:
+    maxSpeed: 25
+    maxAcceleration: 25
+    maxDeceleration: 40
     accelerationFactor:
       serializedVersion: 2
       m_Curve:

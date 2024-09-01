@@ -13,6 +13,8 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private GroundCheck_Stats groundCheck_Air;
     [Header("Movement")]
     [SerializeField] private MovementStats movement_Ground;
+    [SerializeField] private float minSpeedToSprint;
+    [SerializeField] private MovementStats movement_Sprint;
     [SerializeField] private MovementStats movement_Air;
     [Header("Air")]
     [SerializeField] private float gravityForce = -9.81f;
@@ -54,6 +56,8 @@ public class PlayerStats : MonoBehaviour
     public float GravityMultiplaier_TopHeight { get => gravityMultiplaier_TopHeight; }
     public float GravityMultiplaier_Descending { get => gravityMultiplaier_Descending; }
     public float AirTime_HorizontalBoost { get => airTime_HorizontalBoost; }
+    public MovementStats Movement_Sprint { get => movement_Sprint; }
+    public float MinSpeedToSprint { get => minSpeedToSprint; }
     #endregion
 
     private void OnDrawGizmosSelected()
