@@ -5,18 +5,14 @@ using UnityEngine;
 
 public abstract class Grounded : Controllable
 {
-    protected Grounded(StateComponent stateComponent, Vector3 startDirection, PlayerStats.MovementStats movementStats) : base(stateComponent, startDirection, movementStats)
-    {
-    }
-
     public override void FixedRun()
     {
         base.FixedRun();
 
-        if (CheckGround(stats.transform, stats.GroundCheck_Grounded, out RaycastHit rayHit))
-            Float(stats.transform, stats.Rb, rayHit, stats.GroundCheck_Grounded.Height, stats.GroundCheck_Grounded.DampingForce, stats.GroundCheck_Grounded.SpringStrength);
+        if (CheckGround(out RaycastHit rayHit))
+            Float(stateComponent.transform, rb, rayHit, stats_GroundCheck.Height, stats_GroundCheck.DampingForce, stats_GroundCheck.SpringStrength);
         else
-            nextState = new Air(stateComponent, direction, stats.Movement_Air);
+            nextState = stateComponent.State_Air;
     }
 
     protected void Float(Transform transform, Rigidbody rb, RaycastHit rayHit, float height, float dampingForce, float springStrength)

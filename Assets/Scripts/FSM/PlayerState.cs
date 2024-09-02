@@ -7,20 +7,21 @@ using static UnityEngine.UI.Image;
 public abstract class PlayerState
 {
     protected PlayerState nextState;
-    protected StateComponent stateComponent;
-    protected Stopwatch stopwatch_state = new();
+    [SerializeField] protected StateComponent stateComponent;
+    protected Stopwatch stopwatch_state;
     public float StateDuration { get { return (float)stopwatch_state.Elapsed.TotalSeconds; } }
-    protected PlayerState(StateComponent stateComponent)
-    {
-        this.stateComponent = stateComponent;
-    }
 
     public virtual void Enter()
     {
+        stopwatch_state = new();
         stopwatch_state.Start();
     }
 
     public abstract void FixedRun();
     public abstract PlayerState Run();
-    public abstract void Exit();
+    public virtual void Exit()
+    {
+        stopwatch_state.Reset();
+        nextState = null;
+    }
 }

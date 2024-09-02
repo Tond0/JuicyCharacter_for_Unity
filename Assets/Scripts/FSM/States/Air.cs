@@ -1,13 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class Air : Controllable
 {
+    [Space(15)]
+    [SerializeField] private float gravityForce = -9.81f;
+    protected bool useGravity = true;
+    protected bool checkGround = true;
     protected float gravityMultiplaier = 1;
-    public Air(StateComponent stateComponent, Vector3 startDirection, PlayerStats.MovementStats movementStats) : base(stateComponent, startDirection, movementStats)
-    {
-    }
 
     public override void Enter()
     {
@@ -25,27 +28,25 @@ public class Air : Controllable
 
     private void CheckCoyoteTime()
     {
-        if (StateDuration > stats.CoyoteTime) return;
+        if (StateDuration > stateComponent.State_Jump.CoyoteTime) return;
 
-        nextState = new Jump(stateComponent, direction, stats.Movement_Ground);
+        nextState = stateComponent.State_Jump;
     }
 
     public override void FixedRun()
     {
         base.FixedRun();
 
-        if (checkGround && CheckGround(stats.transform, stats.GroundCheck_Air))
-            nextState = new Idle(stateComponent, direction, stats.Movement_Ground);
+        if (checkGround && CheckGround())
+            nextState = stateComponent.State_Stand;
 
         CustomGravity();
     }
 
-    protected bool useGravity = true;
-    protected bool checkGround = true;
     private void CustomGravity()
     {
         if (!useGravity) return;
 
-        stats.Rb.AddForce(stats.GravityForce * gravityMultiplaier * Vector3.up, ForceMode.Acceleration);
+        rb.AddForce(gravityForce * gravityMultiplaier * Vector3.up, ForceMode.Acceleration);
     }
 }

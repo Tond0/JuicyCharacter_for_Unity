@@ -5,75 +5,71 @@ using System.Timers;
 using UnityEditor.SceneTemplate;
 using UnityEngine;
 
+[Serializable]
 public class Jump : Air
 {
-    private bool wantToJump = true;
+    [Space(10)]
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float airtTime_AccelMultiplaier;
+    [SerializeField] private float coyoteTime = 0.3f;
+    [SerializeField] private float maxJumpDuration;
+    [SerializeField] private float minJumpDuration;
+    [Space(10)]
+    [SerializeField] private float gravityMultiplaier_Ascending;
+    [SerializeField] private float gravityMultiplaier_InputReleased;
+    [SerializeField] private float gravityMultiplaier_TopHeight;
+    [SerializeField] private float gravityMultiplaier_Descending;
     private Timer timer_jumpForceDuration;
 
     private enum JumpState { Ascending, Top, Descending  };
     private JumpState jumpState = JumpState.Ascending;
-    public Jump(StateComponent stateComponent, Vector3 startDirection, PlayerStats.MovementStats movementStats) : base(stateComponent, startDirection, movementStats)
-    {
-    }
+
+    public float CoyoteTime { get => coyoteTime; }
 
     public override void Enter()
     {
         base.Enter();
 
-        InputManager.OnJumpReleased += () => wantToJump = false;
-
-
         //Do not check the ground while we're ascending
         checkGround = false;
 
         //Timer for input jumpForce duration
-        timer_jumpForceDuration = new Timer(stats.MaxJumpForceDuration * 1000);
-        timer_jumpForceDuration.Elapsed += (object sender, ElapsedEventArgs e) =>
-            {
-                wantToJump = false;
-                checkGround = true;
-            };
+        timer_jumpForceDuration = new Timer(maxJumpDuration * 1000);
+        timer_jumpForceDuration.Elapsed += (object sender, ElapsedEventArgs e) => checkGround = true;
         timer_jumpForceDuration.Start();
 
         //First set of gravity
-        gravityMultiplaier = stats.GravityMultiplaier_Ascending;
+        gravityMultiplaier = gravityMultiplaier_Ascending;
 
         //Let's Jump! Force up!
-        Vector3 app_velocity = stats.Rb.velocity;
-        app_velocity.y = stats.JumpForce;
-        stats.Rb.velocity = app_velocity;
+        Vector3 app_velocity = rb.velocity;
+        app_velocity.y = jumpForce;
+        rb.velocity = app_velocity;
     }
 
-    public override void Exit()
+    public override PlayerState Run()
     {
-        base.Exit();
-
-        InputManager.OnJumpReleased -= () => wantToJump = false;
-    }
-
-    public override void FixedRun()
-    {
-        base.FixedRun();
+        base.Run();
 
         switch (jumpState)
         {
             case JumpState.Ascending:
 
-                if(StateDuration >= stats.MinJumpForceDuration && !wantToJump)
+                if(StateDuration >= minJumpDuration && !InputManager.current.WantToJump)
                 {
                     //Boost speed
-                    acceleration_Multiplaier = stats.AirTime_HorizontalBoost;
-                    //Apply top height gravity
-                    gravityMultiplaier = stats.GravityMultiplaier_InputReleased;
+                    acceleration_Multiplaier = airtTime_AccelMultiplaier;
+                    //Apply new gravity
+                    gravityMultiplaier = gravityMultiplaier_InputReleased;
                 }
-                else if (StateDuration >= stats.MaxJumpForceDuration)
+                else if (StateDuration >= maxJumpDuration)
                 {
-                    jumpState = JumpState.Top;
+                      jumpState = JumpState.Top;
                     
                     //Boost speed
-                    acceleration_Multiplaier = stats.AirTime_HorizontalBoost;
+                    acceleration_Multiplaier = airtTime_AccelMultiplaier;
                     //Apply top height gravity
-                    gravityMultiplaier = stats.GravityMultiplaier_TopHeight;
+                    gravityMultiplaier = gravityMultiplaier_TopHeight;
                     
                     checkGround = true;
                 }
@@ -83,11 +79,11 @@ public class Jump : Air
             case JumpState.Top:
 
 
-                if (stats.Rb.velocity.y < 0)
+                if (rb.velocity.y < 0)
                 {
                     jumpState = JumpState.Descending;
                     acceleration_Multiplaier = 1;
-                    gravityMultiplaier = stats.GravityMultiplaier_Descending;
+                    gravityMultiplaier = gravityMultiplaier_Descending;
                 }
 
                 break;
@@ -96,5 +92,7 @@ public class Jump : Air
             case JumpState.Descending:
                 break;
         }
+
+        return nextState;
     }
 }

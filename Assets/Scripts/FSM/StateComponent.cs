@@ -11,9 +11,22 @@ public class StateComponent : MonoBehaviour
 
     [SerializeField] private PlayerStats playerStats;
     public PlayerStats PlayerStats { get { return playerStats; } }
+
+
+    [Header("States")]
+    [SerializeField] private Stand state_Stand;
+    [SerializeField] private Stand state_Sprint;
+    [SerializeField] private Air state_Air;
+    [SerializeField] private Jump state_Jump;
+    //Getter
+    public Stand State_Stand { get => state_Stand; }
+    public Jump State_Jump { get => state_Jump; }
+    public Air State_Air { get => state_Air; }
+    public Stand State_Sprint { get => state_Sprint; }
+
     private void Start()
     {
-        currentState = new Idle(this, Vector3.zero, PlayerStats.Movement_Ground);
+        currentState = State_Stand;
         currentState.Enter();
     }
 
@@ -26,8 +39,8 @@ public class StateComponent : MonoBehaviour
     private void RunCurrentState()
     {
         PlayerState nextState = currentState.Run();
-
         if (nextState == null) return;
+        if (nextState == currentState) return;
 
         TransitionState(nextState);
     }

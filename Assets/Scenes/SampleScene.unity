@@ -1345,6 +1345,207 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerStats: {fileID: 1659147473}
+  state_Stand:
+    stateComponent: {fileID: 1659147472}
+    stats_GroundCheck:
+      height: 1.1
+      heightOffset: 0.8
+      heightCheckBuffer: 2
+      wideCheckBuffer: 1
+      springStrength: 300
+      dampingForce: -20
+    stats_Movement:
+      maxSpeed: 18
+      maxAcceleration: 35
+      maxDeceleration: 40
+      accelerationFactor:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 3
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.5
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    rb: {fileID: 1659147474}
+    minSpeedToSprint: 5
+  state_Sprint:
+    stateComponent: {fileID: 1659147472}
+    stats_GroundCheck:
+      height: 1.1
+      heightOffset: 0.8
+      heightCheckBuffer: 3.5
+      wideCheckBuffer: 1
+      springStrength: 300
+      dampingForce: -20
+    stats_Movement:
+      maxSpeed: 25
+      maxAcceleration: 35
+      maxDeceleration: 30
+      accelerationFactor:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 3
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.5
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    rb: {fileID: 1659147474}
+    minSpeedToSprint: 3
+  state_Air:
+    stateComponent: {fileID: 1659147472}
+    stats_GroundCheck:
+      height: 1
+      heightOffset: 0.8
+      heightCheckBuffer: 1
+      wideCheckBuffer: 1
+      springStrength: 50
+      dampingForce: 15
+    stats_Movement:
+      maxSpeed: 18
+      maxAcceleration: 30
+      maxDeceleration: 0
+      accelerationFactor:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 3
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.5
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    rb: {fileID: 1659147474}
+    gravityForce: -9.81
+  state_Jump:
+    stateComponent: {fileID: 1659147472}
+    stats_GroundCheck:
+      height: 1
+      heightOffset: 0.8
+      heightCheckBuffer: 1
+      wideCheckBuffer: 1
+      springStrength: 50
+      dampingForce: 15
+    stats_Movement:
+      maxSpeed: 18
+      maxAcceleration: 30
+      maxDeceleration: 0
+      accelerationFactor:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 3
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.5
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    rb: {fileID: 1659147474}
+    gravityForce: -9.81
+    jumpForce: 8
+    airtTime_AccelMultiplaier: 1.5
+    coyoteTime: 0.3
+    maxJumpDuration: 1
+    minJumpDuration: 0.1
+    gravityMultiplaier_Ascending: 1.5
+    gravityMultiplaier_InputReleased: 3
+    gravityMultiplaier_TopHeight: 0.8
+    gravityMultiplaier_Descending: 3
 --- !u!114 &1659147473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1361,13 +1562,13 @@ MonoBehaviour:
   groundCheck_Grounded:
     height: 1.1
     heightOffset: 0.8
-    heightCheckBuffer: 3.5
+    heightCheckBuffer: 2
     wideCheckBuffer: 1
     springStrength: 300
     dampingForce: -20
   groundCheck_Air:
     height: 1
-    heightOffset: 0.5
+    heightOffset: 0.8
     heightCheckBuffer: 1
     wideCheckBuffer: 1
     springStrength: 50
@@ -1518,7 +1719,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1

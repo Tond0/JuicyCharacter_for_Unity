@@ -4,33 +4,27 @@ using UnityEngine;
 
 public abstract class Controllable : PlayerState
 {
+    [SerializeField] protected PlayerStats.GroundCheck_Stats stats_GroundCheck;
+    [SerializeField] protected PlayerStats.MovementStats stats_Movement;
+
     protected Vector2 direction;
-    protected PlayerStats.MovementStats movementStats;
     protected float acceleration_Multiplaier = 1;
 
-    protected PlayerStats stats;
+    [SerializeField] protected Rigidbody rb;
 
-    private Rigidbody rb;
-
-    protected Controllable(StateComponent stateComponent, Vector3 startDirection, PlayerStats.MovementStats movementStats) : base(stateComponent)
-    {
-        direction = startDirection;
-        this.movementStats = movementStats;
-
-        stats = stateComponent.PlayerStats;
-    }
 
     public override void Enter()
     {
         base.Enter();
 
         InputManager.OnMoveFired += (Vector2 direction) => this.direction = direction;
-        
-        rb = stats.Rb;
+        direction = InputManager.current.Direction;
     }
 
     public override void Exit()
     {
+        base.Exit();
+
         InputManager.OnMoveFired -= (Vector2 direction) => this.direction = direction;
     }
 
@@ -47,12 +41,12 @@ public abstract class Controllable : PlayerState
     }
 
     #region GroundCheck
-    protected bool CheckGround(Transform transform, PlayerStats.GroundCheck_Stats groundCheck_stats, out RaycastHit rayHit)
+    protected bool CheckGround(out RaycastHit rayHit)
     {
         //Siccome deve stare in piedi la forza andrà verso l'alto
-        Vector3 springDir = transform.up;
+        Vector3 springDir = stateComponent.transform.up;
 
-        Vector3 origin = transform.position + (groundCheck_stats.HeightOffset * Vector3.up);
+        Vector3 origin = stateComponent.transform.position + (stats_GroundCheck.HeightOffset * Vector3.up);
 
         //Old version
         //Vector3 cubeCenter = new(origin.x, origin.y - groundCheck_stats.HeightCheckBuffer / 2, origin.z);
@@ -61,15 +55,15 @@ public abstract class Controllable : PlayerState
 
         //Spariamo 5 raycast in 5 posizioni diverse per il controllo del terreno
         //Centro
-        if (Physics.Raycast(origin, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
+        if (Physics.Raycast(origin, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
         //Destra
-        if (Physics.Raycast(origin + Vector3.right * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
+        if (Physics.Raycast(origin + Vector3.right * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
         //Sinistra
-        if (Physics.Raycast(origin - Vector3.right * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
+        if (Physics.Raycast(origin - Vector3.right * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
         //Di fronte
-        if (Physics.Raycast(origin + Vector3.forward * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
+        if (Physics.Raycast(origin + Vector3.forward * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
         //Dietro
-        if (Physics.Raycast(origin - Vector3.forward * groundCheck_stats.WideCheckBuffer / 2, -springDir, out rayHit, groundCheck_stats.HeightCheckBuffer)) return true;
+        if (Physics.Raycast(origin - Vector3.forward * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
 
         //bool isGrounded = Physics.BoxCast(origin, size / 2, -springDir, out rayHit, Quaternion.identity, heightCheckBuffer);
         //bool isGrounded = Physics.OverlapBox(cubeCenter, size / 2, Quaternion.identity, groundMask, QueryTriggerInteraction.Ignore);
@@ -77,21 +71,34 @@ public abstract class Controllable : PlayerState
         return false;
     }
 
-    protected bool CheckGround(Transform transform, PlayerStats.GroundCheck_Stats groundCheck_stats)
+    protected bool CheckGround()
     {
         //Siccome deve stare in piedi la forza andrà verso l'alto
-        Vector3 springDir = transform.up;
+        Vector3 springDir = stateComponent.transform.up;
 
-        Vector3 origin = transform.position + (groundCheck_stats.HeightOffset * Vector3.up);
-        Ray standingRay = new(origin, -springDir);
-        Vector3 size = groundCheck_stats.WideCheckBuffer * Vector3.one;
+        Vector3 origin = stateComponent.transform.position + (stats_GroundCheck.HeightOffset * Vector3.up);
 
-        //bool isGrounded = Physics.Raycast(standingRay, out RaycastHit rayHit, heightCheckBuffer);
-        bool isGrounded = Physics.BoxCast(origin, size / 2, -springDir, Quaternion.identity, groundCheck_stats.HeightCheckBuffer);
+        //Old version
+        //Vector3 cubeCenter = new(origin.x, origin.y - groundCheck_stats.HeightCheckBuffer / 2, origin.z);
+        //Vector3 size = new(wideCheckBuffer, heightCheckBuffer, wideCheckBuffer);
+        //Vector3 size = groundCheck_stats.WideCheckBuffer * Vector3.one;
 
-        Debug.DrawRay(origin, -springDir * groundCheck_stats.HeightCheckBuffer, Color.red);
+        //Spariamo 5 raycast in 5 posizioni diverse per il controllo del terreno
+        //Centro
+        if (Physics.Raycast(origin, -springDir, out RaycastHit rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
+        //Destra
+        if (Physics.Raycast(origin + Vector3.right * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
+        //Sinistra
+        if (Physics.Raycast(origin - Vector3.right * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
+        //Di fronte
+        if (Physics.Raycast(origin + Vector3.forward * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
+        //Dietro
+        if (Physics.Raycast(origin - Vector3.forward * stats_GroundCheck.WideCheckBuffer / 2, -springDir, out rayHit, stats_GroundCheck.HeightCheckBuffer)) return true;
 
-        return isGrounded;
+        //bool isGrounded = Physics.BoxCast(origin, size / 2, -springDir, out rayHit, Quaternion.identity, heightCheckBuffer);
+        //bool isGrounded = Physics.OverlapBox(cubeCenter, size / 2, Quaternion.identity, groundMask, QueryTriggerInteraction.Ignore);
+
+        return false;
     }
     #endregion
 
@@ -104,18 +111,18 @@ public abstract class Controllable : PlayerState
         Vector3 cameraRelativeDirection = RelateTo(direction, Camera.main.transform);
 
         // Calcola la velocità desiderata in base alla direzione della telecamera
-        Vector3 desireVelocity = new Vector3(cameraRelativeDirection.x, 0, cameraRelativeDirection.z) * movementStats.MaxSpeed;
+        Vector3 desireVelocity = new Vector3(cameraRelativeDirection.x, 0, cameraRelativeDirection.z) * stats_Movement.MaxSpeed;
 
         float maxAcceleration;
         if (direction != Vector2.zero)
         {
             // Calcola il prodotto scalare tra la velocità corrente e quella desiderata
             float velDot = Vector3.Dot(currentVelocity.normalized, desireVelocity.normalized);
-            maxAcceleration = movementStats.MaxAcceleration * movementStats.AccelerationFactor.Evaluate(velDot);
+            maxAcceleration = stats_Movement.MaxAcceleration * stats_Movement.AccelerationFactor.Evaluate(velDot);
         }
         else
         {
-            maxAcceleration = movementStats.MaxDeceleration;
+            maxAcceleration = stats_Movement.MaxDeceleration;
         }
 
         // Calcola la variazione massima della velocità in questo frame
@@ -126,11 +133,13 @@ public abstract class Controllable : PlayerState
 
         finalVelocity.y = rb.velocity.y;
 
-        Debug.DrawRay(stateComponent.PlayerStats.transform.position, desireVelocity, Color.red);
-        Debug.DrawRay(stateComponent.PlayerStats.transform.position, currentVelocity, Color.green);
+        Debug.DrawRay(stateComponent.transform.position, desireVelocity, Color.red);
+        Debug.DrawRay(stateComponent.transform.position, finalVelocity, Color.green);
 
         // Assegna la nuova velocità al rigidbody
+        //Dynamic rb 
         rb.velocity = finalVelocity;
+        //rb.MovePosition(stateComponent.transform.position +  finalVelocity);
     }
 
     private Vector3 RelateTo(Vector2 inputDirection, Transform relativeTransform)
