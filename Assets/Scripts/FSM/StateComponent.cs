@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerStats))]
 public class StateComponent : MonoBehaviour
 {
     private PlayerState currentState;
@@ -18,6 +18,9 @@ public class StateComponent : MonoBehaviour
     [SerializeField] private Stand state_Sprint;
     [SerializeField] private Air state_Air;
     [SerializeField] private Jump state_Jump;
+
+    [Header("Debug")]
+    [SerializeField] private TextMeshProUGUI txt_StateDebug;
     //Getter
     public Stand State_Stand { get => state_Stand; }
     public Jump State_Jump { get => state_Jump; }
@@ -33,7 +36,7 @@ public class StateComponent : MonoBehaviour
     private void Update()
     {
         RunCurrentState();
-        Debug.Log(CurrentState.ToSafeString());
+        txt_StateDebug.text = currentState.ToSafeString();
     }
 
     private void RunCurrentState()

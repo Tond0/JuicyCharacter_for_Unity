@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,8 +14,6 @@ public class Stand : Grounded
     public override void Enter()
     {
         base.Enter();
-
-        canSprint = false;
 
         InputManager.OnJumpFired += () => nextState = stateComponent.State_Jump;
     }
@@ -30,9 +29,10 @@ public class Stand : Grounded
     {
         base.Run();
 
-        if (nextState != null) return nextState;
+        if (nextState != stateComponent.CurrentState && nextState != null) return nextState;
 
-        canSprint = rb.velocity.z >= minSpeedToSprint;
+        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+        canSprint = localVelocity.z >= minSpeedToSprint;
 
         if (InputManager.current.WantToSprint && canSprint)
             nextState = stateComponent.State_Sprint;

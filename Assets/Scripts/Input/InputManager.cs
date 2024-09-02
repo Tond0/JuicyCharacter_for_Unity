@@ -58,8 +58,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     public void OnMove(InputAction.CallbackContext context)
     {
         direction = context.ReadValue<Vector2>();
-        direction.Normalize();
-
+        //direction.Normalize();
         OnMoveFired?.Invoke(direction);
     }
 
@@ -76,6 +75,13 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     public void OnCrouch(InputAction.CallbackContext context)
     {
         ChecInputPhase(context, OnCrouchFired, OnCrouchReleased, out wantToCrouch);
+    }
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        Vector2 direction = context.ReadValue<Vector2>();
+        direction.Normalize(); 
+
+        OnLookFired?.Invoke(direction);
     }
     #endregion
 
@@ -99,11 +105,4 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
         }
     }
 
-    public void OnLook(InputAction.CallbackContext context)
-    {
-        Vector2 direction = context.ReadValue<Vector2>();
-        direction.Normalize(); 
-
-        OnLookFired?.Invoke(direction);
-    }
 }
