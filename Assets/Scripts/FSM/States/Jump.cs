@@ -23,11 +23,16 @@ public class Jump : Air
     private enum JumpState { Ascending, Top, Descending  };
     private JumpState jumpState = JumpState.Ascending;
 
+    private bool wantToJump;
     public float CoyoteTime { get => coyoteTime; }
 
     public override void Enter()
     {
         base.Enter();
+
+        wantToJump = true;
+
+        InputManager.OnJumpReleased += Handle_JumpReleased;
 
         jumpState = JumpState.Ascending;
 
@@ -43,6 +48,19 @@ public class Jump : Air
         rb.velocity = app_velocity;
     }
 
+    private void Handle_JumpReleased()
+    {
+        wantToJump = false;
+        InputManager.OnJumpReleased -= Handle_JumpReleased;
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+
+        InputManager.OnJumpReleased -= Handle_JumpReleased;
+    }
+
     public override PlayerState Run()
     {
         base.Run();
@@ -51,8 +69,8 @@ public class Jump : Air
         {
             case JumpState.Ascending:
 
-                if (StateDuration >= minJumpDuration && !InputManager.current.WantToJump
-                        || StateDuration >= maxJumpDuration)
+                if (StateDuration >= minJumpDuration && !wantToJump
+                    || StateDuration >= maxJumpDuration)
                 {
                     //Boost speed
                     acceleration_Multiplaier = airtTime_AccelMultiplaier;

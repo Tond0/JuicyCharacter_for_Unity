@@ -9,37 +9,47 @@ using UnityEngine;
 public class Stand : Grounded
 {
     [SerializeField] private float minSpeedToSprint;
-    private bool canSprint;
-
     public override void Enter()
     {
         base.Enter();
 
-        InputManager.OnJumpFired += () => nextState = stateComponent.State_Jump;
+        InputManager.OnJumpFired += Handle_JumpFired;
+        InputManager.OnCrouchFired += Handle_CrouchFired;
+        InputManager.OnSprintFired += TrySprint;
+    }
+
+    private void Handle_CrouchFired()
+    {
+        nextState = stateComponent.State_Crouch;
+    }
+
+    private void Handle_JumpFired()
+    {
+        nextState = stateComponent.State_Jump;
     }
 
     public override void Exit()
     {
         base.Exit();
 
-        InputManager.OnJumpFired -= () => nextState = stateComponent.State_Jump;
+        InputManager.OnJumpFired -= Handle_JumpFired;
+        InputManager.OnCrouchFired -= Handle_CrouchFired;
+        InputManager.OnSprintFired -= TrySprint;
     }
 
     public override PlayerState Run()
-    {
+    {       
         base.Run();
-
-        if (nextState != stateComponent.CurrentState && nextState != null) return nextState;
-
-        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
-        canSprint = localVelocity.z >= minSpeedToSprint;
-
-        if (InputManager.current.WantToSprint && canSprint)
-            nextState = stateComponent.State_Sprint;
-        else
-            nextState = stateComponent.State_Stand;
-
 
         return nextState;
     }   
+
+    private void TrySprint()
+    {
+        //Sprint Check
+        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+
+        if (localVelocity.z >= minSpeedToSprint)
+            nextState = stateComponent.State_Sprint;
+    }
 }

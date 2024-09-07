@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
@@ -10,9 +11,9 @@ public abstract class Grounded : Controllable
         base.FixedRun();
 
         if (CheckGround(out RaycastHit rayHit))
-            Float(stateComponent.transform, rb, rayHit, stats_GroundCheck.Height, stats_GroundCheck.DampingForce, stats_GroundCheck.SpringStrength);
+            Float(stateComponent.transform, rb, rayHit, Stats_GroundCheck.Height, Stats_GroundCheck.DampingForce, Stats_GroundCheck.SpringStrength);
         else
-            nextState = stateComponent.State_Air;
+            nextState = stateComponent.State_Falling;
     }
 
     protected void Float(Transform transform, Rigidbody rb, RaycastHit rayHit, float height, float dampingForce, float springStrength)
