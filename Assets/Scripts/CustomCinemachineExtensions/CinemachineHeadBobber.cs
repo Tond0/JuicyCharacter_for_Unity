@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//FIXME: Integrare con CinemachineDutchLerp
 public class CinemachineHeadBobber : CinemachineExtension
 {
     private CinemachineBasicMultiChannelPerlin noiseVCam;

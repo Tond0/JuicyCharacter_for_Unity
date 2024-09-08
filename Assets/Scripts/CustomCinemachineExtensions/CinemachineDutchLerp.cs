@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//FIXME: Integrare con CinemachineHeadBobber
 public class CinemachineDutchLerp : CinemachineExtension
 {
     [SerializeField] private Rigidbody rb;
