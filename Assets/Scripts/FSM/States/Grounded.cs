@@ -6,6 +6,10 @@ using UnityEngine;
 
 public abstract class Grounded : Controllable
 {
+    [SerializeField] private float headBobbingFrequency = 1;
+
+    public float HeadBobbingFrequency { get => headBobbingFrequency; }
+
     public override void FixedRun()
     {
         base.FixedRun();

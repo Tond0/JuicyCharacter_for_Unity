@@ -5,8 +5,9 @@ using UnityEngine;
 
 public abstract class Controllable : PlayerState
 {
-    
-    [SerializeField] protected PlayerState.MovementStats stats_Movement;
+
+    [SerializeField] private PlayerState.MovementStats stats_Movement;
+    public MovementStats Stats_Movement { get => stats_Movement; }
 
     protected Vector2 direction;
     protected float acceleration_Multiplaier = 1;
@@ -15,6 +16,7 @@ public abstract class Controllable : PlayerState
 
     //Inputs
     protected List<Action> actionToListen;
+
 
     public override void Enter()
     {
@@ -139,18 +141,18 @@ public abstract class Controllable : PlayerState
         Vector3 cameraRelativeDirection = RelateTo(direction, Camera.main.transform);
 
         // Calcola la velocità desiderata in base alla direzione della telecamera
-        Vector3 desireVelocity = new Vector3(cameraRelativeDirection.x, 0, cameraRelativeDirection.z) * stats_Movement.MaxSpeed;
+        Vector3 desireVelocity = new Vector3(cameraRelativeDirection.x, 0, cameraRelativeDirection.z) * Stats_Movement.MaxSpeed;
 
         float maxAcceleration;
         if (direction != Vector2.zero)
         {
             // Calcola il prodotto scalare tra la velocità corrente e quella desiderata
             float velDot = Vector3.Dot(currentVelocity.normalized, desireVelocity.normalized);
-            maxAcceleration = stats_Movement.MaxAcceleration * stats_Movement.AccelerationFactor.Evaluate(velDot);
+            maxAcceleration = Stats_Movement.MaxAcceleration * Stats_Movement.AccelerationFactor.Evaluate(velDot);
         }
         else
         {
-            maxAcceleration = stats_Movement.MaxDeceleration;
+            maxAcceleration = Stats_Movement.MaxDeceleration;
         }
 
         // Calcola la variazione massima della velocità in questo frame

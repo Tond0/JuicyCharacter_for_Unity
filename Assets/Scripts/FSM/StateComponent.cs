@@ -11,7 +11,7 @@ public class StateComponent : MonoBehaviour
     private PlayerState currentState;
     public PlayerState CurrentState { get { return currentState; } }
 
-    public static event Action OnStateChange;
+    public static event Action<PlayerState, PlayerState> OnStateChange;
 
     [Header("States")]
     [SerializeField] private Stand state_Stand;
@@ -34,8 +34,7 @@ public class StateComponent : MonoBehaviour
 
     private void Start()
     {
-        currentState = State_Stand;
-        currentState.Enter();
+        TransitionState(State_Stand);
     }
 
     private void Update()
@@ -61,13 +60,13 @@ public class StateComponent : MonoBehaviour
 
     private void TransitionState(PlayerState newState)
     {
-        currentState.Exit();
+        currentState?.Exit();
+
+        newState.Enter();
+
+        OnStateChange?.Invoke(currentState, newState);
 
         currentState = newState;
-
-        currentState.Enter();
-
-        OnStateChange?.Invoke();
     }
 
     private void OnDrawGizmosSelected()

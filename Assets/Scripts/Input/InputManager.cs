@@ -200,7 +200,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     /// <summary>
     /// Function that call each action in the buffer until we get a reaction
     /// </summary>
-    private void CallBuffer()
+    private void CallBuffer(PlayerState oldState, PlayerState newState)
     {
         for (int i = 0; i < inputBufferInvoker.Count; i++)
         {

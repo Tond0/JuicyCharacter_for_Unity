@@ -1311,7 +1311,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.306}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2655,6 +2655,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     rb: {fileID: 1659147474}
+    headBobbingFrequency: 1
     minSpeedToSprint: 5
   state_Sprint:
     stateComponent: {fileID: 1659147472}
@@ -2703,6 +2704,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     rb: {fileID: 1659147474}
+    headBobbingFrequency: 1.5
     minSpeedToSprint: 5
   state_Crouch:
     stateComponent: {fileID: 1659147472}
@@ -2751,6 +2753,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     rb: {fileID: 1659147474}
+    headBobbingFrequency: 0.8
   state_Slide:
     stateComponent: {fileID: 1659147472}
     stats_GroundCheck:
@@ -2798,6 +2801,7 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     rb: {fileID: 1659147474}
+    headBobbingFrequency: 0
     startForce: 20
     continuosForce: 0.55
     maxSlopeAngle: 60
@@ -3076,6 +3080,7 @@ GameObject:
   - component: {fileID: 1705856042}
   - component: {fileID: 1705856043}
   - component: {fileID: 1705856045}
+  - component: {fileID: 1705856046}
   m_Layer: 0
   m_Name: cm
   m_TagString: Untagged
@@ -3194,6 +3199,23 @@ MonoBehaviour:
   m_YawDamping: 0
   m_RollDamping: 0
   m_AngularDamping: 0
+--- !u!114 &1705856046
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705856040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_NoiseProfile: {fileID: 0}
+  m_PivotOffset: {x: 0, y: 0, z: 0}
+  m_AmplitudeGain: 1
+  m_FrequencyGain: 1
+  mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &1854278266
 GameObject:
   m_ObjectHideFlags: 0
@@ -3522,6 +3544,8 @@ GameObject:
   - component: {fileID: 2030408374}
   - component: {fileID: 2030408376}
   - component: {fileID: 2030408375}
+  - component: {fileID: 2030408377}
+  - component: {fileID: 2030408378}
   m_Layer: 0
   m_Name: Cinemachine
   m_TagString: Untagged
@@ -3537,7 +3561,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2030408373}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.35, y: 17.3, z: 0.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3600,6 +3624,36 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 1705856041}
+--- !u!114 &2030408377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2030408373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 735ddb4e8bacba242aedabf659629566, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 1659147474}
+  stateComponent: {fileID: 1659147472}
+  maxDutch: 4.5
+--- !u!114 &2030408378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2030408373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c359223951df6b409dcc4efbe823047, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customNoise: {fileID: 11400000, guid: f47f43ab4013dd14fa6473bfc4617235, type: 2}
+  rb: {fileID: 1659147474}
+  stateComponent: {fileID: 1659147472}
 --- !u!1 &2046028241
 GameObject:
   m_ObjectHideFlags: 0
