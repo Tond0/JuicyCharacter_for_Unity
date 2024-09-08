@@ -30,12 +30,12 @@ public class Slide : Grounded
         {
             if (StateDuration >= slideDuration)
             {
-                //What if it goes to crouch????
-                nextState = stateComponent.State_Stand;
+                //What if it goes to stand????
+                nextState = stateComponent.State_Crouch;
             }
         }
         else if (rb.velocity.y > 2)
-            nextState = stateComponent.State_Stand;
+            nextState = stateComponent.State_Crouch;
 
         rb.velocity += rb.transform.forward * continuosForce;
 
