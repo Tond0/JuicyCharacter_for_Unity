@@ -47,6 +47,8 @@ public class Sprint : Grounded
 
     public override PlayerState Run()
     {
+        //We always check if we're running enough fast to be sprinting or walking!
+
         Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
         bool canSprint = localVelocity.z >= minSpeedToSprint;
 

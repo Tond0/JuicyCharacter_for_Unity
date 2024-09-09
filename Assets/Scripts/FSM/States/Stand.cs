@@ -7,7 +7,8 @@ using UnityEngine;
 [Serializable]
 public class Stand : Grounded
 {
-    [SerializeField] private float minSpeedToSprint;
+    [Space(15)]
+    [SerializeField,Tooltip("How fast should the player be to sprint?")] private float minSpeedToSprint;
     public override void Enter()
     {
         base.Enter();
@@ -17,6 +18,7 @@ public class Stand : Grounded
         InputManager.OnSprintFired += TrySprint;
     }
 
+    #region Events Handler
     private void Handle_CrouchFired()
     {
         nextState = stateComponent.State_Crouch;
@@ -26,6 +28,16 @@ public class Stand : Grounded
     {
         nextState = stateComponent.State_Jump;
     }
+
+    private void TrySprint()
+    {
+        //Sprint Check
+        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+
+        if (localVelocity.z >= minSpeedToSprint)
+            nextState = stateComponent.State_Sprint;
+    }
+    #endregion
 
     public override void Exit()
     {
@@ -43,12 +55,5 @@ public class Stand : Grounded
         return nextState;
     }   
 
-    private void TrySprint()
-    {
-        //Sprint Check
-        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
-
-        if (localVelocity.z >= minSpeedToSprint)
-            nextState = stateComponent.State_Sprint;
-    }
+    
 }

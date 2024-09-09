@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.UI.Image;
 
+
 [Serializable]
 public class Crouch : Grounded
 {
@@ -15,6 +16,7 @@ public class Crouch : Grounded
     {
         base.Enter();
 
+        //Events (they all go to stand)
         InputManager.OnCrouchFired += Handle_CrochFireNdReleased;
         InputManager.OnCrouchReleased += Handle_CrochFireNdReleased;
         InputManager.OnJumpFired += Handle_CrochFireNdReleased;
@@ -22,10 +24,16 @@ public class Crouch : Grounded
 
     private void Handle_CrochFireNdReleased()
     {
+        //If we can stand...
         if (!CheckTop()) return;
+        //We stand!
         nextState = stateComponent.State_Stand;
     }
 
+    /// <summary>
+    /// Perform a boxcast to check if something is on top of the topHead transform
+    /// </summary>
+    /// <returns></returns>
     private bool CheckTop()
     {
         Vector3 origin = topHead.position;

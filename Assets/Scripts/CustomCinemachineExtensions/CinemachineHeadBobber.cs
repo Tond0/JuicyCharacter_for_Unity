@@ -4,74 +4,74 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//FIXME: Integrare con CinemachineDutchLerp
-public class CinemachineHeadBobber : CinemachineExtension
+/// <summary>
+/// Cinemachine extension to let the camera simulate the head bob when walking
+/// </summary>
+public class CinemachineHeadBobber : CinemachinePlayerExtension
 {
+    //The noise cinemachine component we want to edit
     private CinemachineBasicMultiChannelPerlin noiseVCam;
-    [SerializeField] private NoiseSettings customNoise;
-    [SerializeField] private Rigidbody rb;
-    [SerializeField] private StateComponent stateComponent;
 
-    private Vector2 direction;
+    //The noise preset we want to apply
+    [SerializeField] private NoiseSettings customNoise;
+
     protected override void OnEnable()
     {
         base.OnEnable();
 
-        CinemachineVirtualCamera cinemachineVirtualCamera = VirtualCamera as CinemachineVirtualCamera;
-        noiseVCam = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        //Events!
+        //The event that decide, based on the new state that just changed, the frequency of the noise movement
+        StateComponent.OnStateChange += Handle_NoiseFrequency;
 
-        StateComponent.OnStateChange += ChangeNoiseFrequency;
-        InputManager.OnMoveFired += TryNoise;
+        //The event that decide, based on the input direction, if we're moving
+        InputManager.OnMoveFired += Handle_Noise;
     }
 
-
-    private void ChangeNoiseFrequency(PlayerState state1, PlayerState state2)
+    private void Start()
     {
+        //Let's get the cinemachine component for the noise
+        CinemachineVirtualCamera cinemachineVirtualCamera = VirtualCamera as CinemachineVirtualCamera;
+        noiseVCam = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+    }
+
+    /// <summary>
+    /// Change the frequency of the noise based on what the new Ground state tell us.
+    /// </summary>
+    /// <param name="state1"></param>
+    /// <param name="state2"></param>
+    private void Handle_NoiseFrequency(PlayerState state1, PlayerState state2)
+    {
+        //If the state is not grounded we don't want the head bob!
         if (state2 is not Grounded)
         {
+            //let's cancel the head bob by setting the frequency to 0
             noiseVCam.m_FrequencyGain = 0;
             return;
         }
         
+        //let's get what the frequency is for this grounded state
         Grounded groundedState = state2 as Grounded;
         noiseVCam.m_FrequencyGain = groundedState.HeadBobbingFrequency;
     }
 
-    private void TryNoise(Vector2 direction)
+    /// <summary>
+    /// Enable or disable the noise based on if the player's moving
+    /// </summary>
+    /// <param name="direction"></param>
+    private void Handle_Noise(Vector2 direction)
     {
-        this.direction = direction;
-
-        var currentState = stateComponent.CurrentState;
-
         //If is not moving (we're also checking the y but who care cause we're checking if we are grounded also!) or is not grounded...
         if (direction.magnitude <= 0)
         {
+            //No noise please!
             noiseVCam.m_NoiseProfile = null;
             return;
         }
 
+        //Apply the custom noise preset
         noiseVCam.m_NoiseProfile = customNoise;
     }
 
-    protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
-    {
-        return;
-    }
-
-    /*
-     * var currentState = stateComponent.CurrentState;
-
-        //If is not moving on the x or z axis...
-        if ((rb.velocity.x == 0 && rb.velocity.z == 0)
-            || currentState is not Grounded)
-        {
-            noiseVCam.m_NoiseProfile = null;
-            return;
-        }
-
-        //If is not grounded
-        Grounded currentGroundState = (Grounded)currentState;
-
-        noiseVCam.m_NoiseProfile = customNoise;
-     * */
+    //None is happening here
+    protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime) { }
 }
