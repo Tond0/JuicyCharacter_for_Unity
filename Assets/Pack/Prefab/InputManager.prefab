@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd718b19f50b38d4dbd3088510669374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputInteraction_CrouchSlide: 0
-  inputInteraction_Sprint: 0
   inputBuffering_MaxInputs: 2
   inputBuffering_MaxInputTime: 0.3
+  itt_Jump: 0
+  itt_Sprint: 0
+  itt_CrouchSlide: 0
+  itt_Pause: 0

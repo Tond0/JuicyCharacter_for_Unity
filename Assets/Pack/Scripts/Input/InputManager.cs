@@ -41,7 +41,6 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     private readonly List<InputEvent> inputBufferInvoker = new();
 
     [Header("Input interactions")]
-    [SerializeField] private InputTriggerType itt_Jump;
     [SerializeField] private InputTriggerType itt_Sprint;
     [SerializeField] private InputTriggerType itt_CrouchSlide;
     [SerializeField] private InputTriggerType itt_Pause;
@@ -103,7 +102,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     }
 
     //Input that CAN and MAY be buffered
-    public void OnJump(InputAction.CallbackContext context) => Handle_GenericInput(context, OnJumpFired, OnJumpReleased, itt_Jump, InputType.Jump);
+    public void OnJump(InputAction.CallbackContext context) => Handle_GenericInput(context, OnJumpFired, OnJumpReleased, InputTriggerType.HoldNdRelease, InputType.Jump);
     public void OnSprint(InputAction.CallbackContext context) => Handle_GenericInput(context, OnSprintFired, OnSprintReleased, itt_Sprint);
     public void OnCrouch(InputAction.CallbackContext context) => Handle_GenericInput(context, OnCrouchFired, OnCrouchReleased, itt_CrouchSlide, InputType.Crouch);
     public void OnPause(InputAction.CallbackContext context) => Handle_GenericInput(context, OnPauseFired, OnPauseReleased, itt_Pause);

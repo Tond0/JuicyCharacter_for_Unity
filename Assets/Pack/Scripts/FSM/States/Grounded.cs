@@ -21,7 +21,7 @@ public abstract class Grounded : Controllable
         //Check if we're still touching the ground
         if (CheckGround(out RaycastHit rayHit))
             //If we are, then float!
-            Float(stateComponent.transform, rb, rayHit, Stats_GroundCheck.Height, Stats_GroundCheck.DampingForce, Stats_GroundCheck.SpringStrength);
+            Float(stateComponent.transform, rb, rayHit, Stats_GroundCheck.height, Stats_GroundCheck.dampingForce, Stats_GroundCheck.springStrength);
         else
             //If we are not then we're falling
             nextState = stateComponent.State_Falling;

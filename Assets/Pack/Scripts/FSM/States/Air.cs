@@ -17,6 +17,14 @@ public abstract class Air : Controllable
     //should we check the ground?
     protected bool checkGround = true;
 
+    public override void Enter()
+    {
+        base.Enter();
+
+        //We share the same max speed, so player won't feel punished when jumping.
+        stats_Movement.maxSpeed = GetNextGroundedState().Stats_Movement.maxSpeed;
+    }
+
     public override void FixedRun()
     {
         base.FixedRun();
@@ -24,10 +32,20 @@ public abstract class Air : Controllable
         //If we want to check the ground we check it...
         if (checkGround && CheckGround())
             //If we're on ground we stand!
-            nextState = stateComponent.State_Stand;
+            nextState = GetNextGroundedState();
 
         //If we are not on the ground we use custom gravity
         CustomGravity();
+    }
+
+    //The state we will come back to once we're going to touch the ground again.
+    protected virtual Grounded GetNextGroundedState()
+    { 
+        if(stateComponent.PreviousState is Grounded grounded)
+            return grounded;
+        else
+            return stateComponent.State_Stand;
+            
     }
 
     /// <summary>

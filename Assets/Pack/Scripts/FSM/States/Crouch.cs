@@ -37,7 +37,7 @@ public class Crouch : Grounded
     private bool CheckTop()
     {
         Vector3 origin = topHead.position;
-        Vector3 halfExtends = new(1 / 2, 0.01f, 1 / 2);
+        Vector3 halfExtends = new(topWideCheck / 2, 0.01f, topWideCheck / 2);
 
         return !Physics.BoxCast(origin, halfExtends, Vector3.up, Quaternion.identity, topHeightCheck);
     }

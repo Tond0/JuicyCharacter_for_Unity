@@ -37,12 +37,12 @@ public class CinemachineHeadBobber : CinemachinePlayerExtension
     /// <summary>
     /// Change the frequency of the noise based on what the new Ground state tell us.
     /// </summary>
-    /// <param name="state1"></param>
-    /// <param name="state2"></param>
-    private void Handle_NoiseFrequency(PlayerState state1, PlayerState state2)
+    /// <param name="currentState"></param>
+    /// <param name="previousState"></param>
+    private void Handle_NoiseFrequency(PlayerState currentState, PlayerState previousState)
     {
         //If the state is not grounded we don't want the head bob!
-        if (state2 is not Grounded)
+        if (currentState is not Grounded)
         {
             //let's cancel the head bob by setting the frequency to 0
             noiseVCam.m_FrequencyGain = 0;
@@ -50,7 +50,7 @@ public class CinemachineHeadBobber : CinemachinePlayerExtension
         }
         
         //let's get what the frequency is for this grounded state
-        Grounded groundedState = state2 as Grounded;
+        Grounded groundedState = currentState as Grounded;
         noiseVCam.m_FrequencyGain = groundedState.HeadBobbingFrequency;
     }
 

@@ -13,6 +13,10 @@ public class Jump : Air
     [SerializeField, Tooltip("When we change from StandState to FallingState a timer will start and if we press jump before the timer ends, we jump even if we're not on the ground. This decides the timer lenght")] private float coyoteTime = 0.3f;
     [SerializeField, Tooltip("What's the max time that takes (without releasing jump) to reach the top height?")] private float maxJumpDuration;
     [SerializeField, Tooltip("What's the min time that we can jump (even if we release the jump button instantaneously)?")] private float minJumpDuration;
+    
+    [Space(5)]
+    [SerializeField, Tooltip("What's the min Y velocity we need to enter the jump phase Top-Height? (Used also for deciding when to move from Top-Height to Descending phase), can roughly be seen as the duration of the Top-Height phase"), Range(0, 15)] private float topHeightThreshold = 5;
+
     [Space(10)]
     [SerializeField, Tooltip("Gravity when aiming for the top height")] private float gravityMultiplaier_Ascending;
     [SerializeField, Tooltip("Gravity when jump button is released. Higher value = more responsive cut off of the jump")] private float gravityMultiplaier_InputReleased;
@@ -79,7 +83,7 @@ public class Jump : Air
                 //If we released the jump button, is the min duration elapsed?
                 //OR
                 //If we didn't release the jump button yet is the max duration elapsed?
-                if (StateDuration >= minJumpDuration && !wantToJump
+                if ((StateDuration >= minJumpDuration && !wantToJump)
                     || StateDuration >= maxJumpDuration)
                 {
                     //Boost speed
@@ -89,7 +93,7 @@ public class Jump : Air
                 }
 
                 //If we're close to 0 with the velocity...
-                if(rb.velocity.y < 2)
+                if(rb.velocity.y < topHeightThreshold)
                 {
                     //We're at the top of the jump
                     jumpState = JumpState.Top;
@@ -108,7 +112,7 @@ public class Jump : Air
             case JumpState.Top:
 
                 //We're now descending?...
-                if (rb.velocity.y < 0)
+                if (rb.velocity.y < -topHeightThreshold)
                 {
                     //We're trying to reach the ground again
                     jumpState = JumpState.Descending;
@@ -127,5 +131,16 @@ public class Jump : Air
         }
 
         return nextState;
+    }
+
+    protected override Grounded GetNextGroundedState()
+    {
+        Grounded nextGroundedState = base.GetNextGroundedState();
+        
+        //Jumping cancel the slide! So we don't want to get back sliding once we touch the ground again.
+        if(nextGroundedState is Slide)
+            nextGroundedState = stateComponent.State_Sprint;
+
+        return nextGroundedState;
     }
 }
