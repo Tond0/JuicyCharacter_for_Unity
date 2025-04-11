@@ -52,7 +52,10 @@ public abstract class Controllable : PlayerState
     /// <param name="direction"></param>
     private void AssignDirection(Vector2 direction) => this.direction = direction;
 
-    public override void FixedRun() => Move(stateComponent);
+    public override void FixedRun()
+    {
+        Move(stateComponent);
+    }
 
     public override PlayerState Run()
     {
@@ -214,8 +217,11 @@ public abstract class Controllable : PlayerState
     /// <param name="stateComponent"></param>
     private void Look(StateComponent stateComponent)
     {
-        Quaternion playerRot = stateComponent.transform.rotation;
-        playerRot.y = Camera.main.transform.rotation.y;
+        Quaternion playerRot = stateComponent.transform.localRotation;
+        playerRot.y = Camera.main.transform.localRotation.y;
+        playerRot.Normalize();
+        rb.rotation = playerRot;
+        return;
         stateComponent.transform.rotation = playerRot;
     }
 
