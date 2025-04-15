@@ -222,7 +222,9 @@ public abstract class Controllable : PlayerState
         playerRot.Normalize();
         rb.rotation = playerRot;
         return;
-        stateComponent.transform.rotation = playerRot;
+        
+        //DEPRECATED: old method, but without using physics this turn out to be laggy. 
+        //stateComponent.transform.rotation = playerRot;
     }
 
     #region Class Struct
