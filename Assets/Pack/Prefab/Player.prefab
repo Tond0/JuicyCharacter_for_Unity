@@ -93,7 +93,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 1
 --- !u!136 &2272053940937443184
 CapsuleCollider:
@@ -437,8 +437,61 @@ MonoBehaviour:
     gravityMultiplaier_InputReleased: 8
     gravityMultiplaier_TopHeight: 3
     gravityMultiplaier_Descending: 3
+  state_Wallrunning:
+    stateComponent: {fileID: 2265038286375363432}
+    stats_Movement:
+      maxSpeed: 10
+      maxAcceleration: 25
+      maxDeceleration: 30
+      accelerationFactor:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 3
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.5
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 136
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    stats_GroundCheck:
+      height: 1
+      heightOffset: 1.3
+      heightCheckBuffer: 1
+      wideCheckBuffer: 1.5
+      springStrength: 50
+      dampingForce: 15
+    rb: {fileID: 5252726001863904785}
+    gravityForce: -9.81
+    wr_minHeight: 0.7
+    wr_detectionDistance: 1
+    wr_detectionSize: 0.5
+    wallrunning_GravityMultiplaier: 0.25
   txt_StateDebug: {fileID: 0}
   debug_ShowGroundCheck: 1
+  debug_ShowWallRunCheck: 1
 --- !u!1 &2740134081809484959
 GameObject:
   m_ObjectHideFlags: 0
