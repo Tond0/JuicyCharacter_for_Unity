@@ -485,11 +485,14 @@ MonoBehaviour:
       dampingForce: 15
     rb: {fileID: 5252726001863904785}
     gravityForce: -9.81
-    wr_minHeight: 0.7
-    wr_detectionDistance: 1
-    wr_detectionSize: 0.5
+    minHeight: 0.7
+    detectionDistance: 1
+    detectionSize: 0.5
+    jumpForce: 20
     wallrunning_GravityMultiplaier: 0.25
   txt_StateDebug: {fileID: 0}
+  rb_debug: {fileID: 5252726001863904785}
+  txt_VelocityDebug: {fileID: 0}
   debug_ShowGroundCheck: 1
   debug_ShowWallRunCheck: 1
 --- !u!1 &2740134081809484959
