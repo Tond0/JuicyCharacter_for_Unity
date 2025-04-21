@@ -69,7 +69,7 @@ public class StateComponent : MonoBehaviour
         CurrentState.FixedRun();
 
         //Debug
-        txt_VelocityDebug.SetText(rb_debug.velocity.ToString());
+        txt_VelocityDebug?.SetText(rb_debug.velocity.ToString());
     }
 
     /// <summary>
