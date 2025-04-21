@@ -16,7 +16,6 @@ public abstract class Air : Controllable
 
     //should we check the ground?
     protected bool checkGround = true;
-    protected bool overrideMovement = false;
 
     public override void Enter()
     {
@@ -31,14 +30,13 @@ public abstract class Air : Controllable
     //Check for any wall to wallrun
     private void TryWallRun()
     {
-        if(stateComponent.State_Wallrunning.CheckWallRun())
+        if(stateComponent.State_Wallrunning.CheckWallRunInitializer())
             nextState = stateComponent.State_Wallrunning;
     }
 
     public override void FixedRun()
     {
-        if(!overrideMovement)
-            base.FixedRun();
+        base.FixedRun();
 
         //If we want to check the ground we check it...
         if (checkGround && CheckGround())

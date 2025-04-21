@@ -1,4 +1,5 @@
 using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,52 +9,83 @@ using UnityEngine;
 /// </summary>
 public class CinemachineDutchLerp : CinemachinePlayerExtension
 {
-    [SerializeField, Tooltip("What's the max tilt the camera's going to have when reached max speed horizontally?")] private float maxDutch;
-    
+    private float targetDutch;
+    private float stateMaxSpeed;
+    private float stateCurrentSpeed;
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        StateComponent.OnStateChange += Handle_StateDutch;
+    }
+
+    void OnDisable()
+    {
+        StateComponent.OnStateChange -= Handle_StateDutch;
+    }
+
+    private void Handle_StateDutch(PlayerState newState, PlayerState oldState)
+    {
+        if (newState is not Controllable) return;
+
+        //Get the state max speed
+        Controllable currentControllableState = (Controllable)newState;
+
+        //Get the maxDutch we want to reach.
+        float maxDutch = currentControllableState.MaxDutch;
+
+        //We don't want to lerp the dutch for the wallrunning state.
+        if (currentControllableState is WallRunning) 
+        {
+            //FIXME: Forced to be applied each frame because we don't know the CameraState, Bummer.
+            targetDutch = maxDutch;
+            return;
+        };
+
+        //Let's get the max speed
+        stateMaxSpeed = currentControllableState.Stats_Movement.maxSpeed;
+
+        //Target dutch
+        targetDutch = maxDutch;
+    }
+
     protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
     {
-        #if !UNITY_EDITOR
+        if(stateComponent.CurrentState is WallRunning WallRunningState)
+        {
+            state.Lens.Dutch = targetDutch * WallRunningState.GetDutchWallrunningDirection();
+            return;
+        }
 
-            //Let's get the max speed
-            float playerMaxSpeed = GetCurrentMaxSpeed();
-            //No maxspeed means no movement, which  means no tilting
-            if (playerMaxSpeed == 0) return;
+        //What's our target tilt for the camera? (left = -maxDutch, right = maxDutch)
+        targetDutch = Mathf.Abs(targetDutch) * Mathf.Sign(-stateCurrentSpeed);
 
-            //How tilted is the camera in this moment?
-            float currentDutch = state.Lens.Dutch;
+        //What's the current player horizontal velocity based on the camera direction?
+        stateCurrentSpeed = Camera.main.transform.InverseTransformDirection(rb.velocity).x;
 
-            //What's the current player horizontal velocity based on the camera direction?
-            float currentHorizontalSpeed = Camera.main.transform.InverseTransformDirection(rb.velocity).x;
+        //The speed normalized from 0 to 1
+        float normalizedSpeed = Mathf.Abs(stateCurrentSpeed) / stateMaxSpeed;
 
-            //What's our target tilt for the camera? (left = -maxDutch, right = maxDutch)
-            float targetDutch = maxDutch * Mathf.Sign(-currentHorizontalSpeed);
-
-            //The speed normalized from 0 to 1
-            float normalizedSpeed = Mathf.Abs(currentHorizontalSpeed) / playerMaxSpeed;
-            //The max delta change we want to see in the transition
-            float maxDelta = normalizedSpeed * Mathf.Abs(targetDutch - currentDutch);
-
-            //Let's smoothly (based on how fast can the player reach max speed) tilt the camera
-            currentDutch = Mathf.MoveTowards(currentDutch, targetDutch, maxDelta);
-
-            //Let's apply the tilt
-            state.Lens.Dutch = currentDutch;
-            
-        #endif
+        //Let's apply the tilt
+        state.Lens.Dutch = LerpDutch(state.Lens.Dutch, targetDutch, normalizedSpeed);
     }
 
     /// <summary>
-    /// Gets the current max speed of the player
+    /// Lerp the camera to dutch in the desire direction.
+    /// This is not ACTUALLY a Lerp but it does the job.
     /// </summary>
+    /// <param name="startDutch"></param>
+    /// <param name="targetDutch"></param>
+    /// <param name="t"></param>
     /// <returns></returns>
-    private float GetCurrentMaxSpeed()
+    private float LerpDutch(float startDutch, float targetDutch, float t)
     {
-        //If the current state is not controllable than player doesn't have a speed at all!
-        var currentState = stateComponent.CurrentState;
-        if (currentState is not Controllable) return 0;
+        //The max delta change we want to see in the transition
+        float maxDelta = t * Mathf.Abs(targetDutch - startDutch);
 
-        //Get the state max speed
-        Controllable currentControllableState = (Controllable)currentState;
-        return currentControllableState.Stats_Movement.maxSpeed;
+        //Let's smoothly (based on how fast can the player reach max speed) tilt the camera
+        startDutch = Mathf.MoveTowards(startDutch, targetDutch, maxDelta);
+
+        return startDutch;
     }
 }

@@ -29,6 +29,10 @@ public abstract class Controllable : PlayerState
     //We need it for moving and other things (like floating, jumping, sliding
     [SerializeField] protected Rigidbody rb;
 
+    [Space(5)]
+    [SerializeField, Tooltip("How much will the camera tilt when moving?")] protected float maxDutch = 3.5f;
+    public float MaxDutch => maxDutch;
+
 
     public override void Enter()
     {
@@ -56,15 +60,11 @@ public abstract class Controllable : PlayerState
     {
         //Direction relative to the camera
         Vector3 cameraRelativeDirection = RelateTo(inputDirection, Camera.main.transform);
-        Move(stateComponent, cameraRelativeDirection);
-    }
 
-    public override PlayerState Run()
-    {
         //Handle the look inputs
         Look(stateComponent);
 
-        return base.Run();
+        Move(stateComponent, cameraRelativeDirection);
     }
 
     #region GroundCheck method variants
@@ -147,7 +147,7 @@ public abstract class Controllable : PlayerState
 
         //Desire velocity relative to the camera
         Vector3 desireVelocity = new Vector3(direction.x, 0, direction.z) * Stats_Movement.maxSpeed;
-
+        
         float maxAcceleration;
         //If we're moving
         if (inputDirection != Vector2.zero)
@@ -210,7 +210,7 @@ public abstract class Controllable : PlayerState
     /// Rotate the player accordingly to the camera rotation
     /// </summary>
     /// <param name="stateComponent"></param>
-    private void Look(StateComponent stateComponent)
+    protected virtual void Look(StateComponent stateComponent)
     {
         Quaternion playerRot = stateComponent.transform.localRotation;
         playerRot.y = Camera.main.transform.localRotation.y;

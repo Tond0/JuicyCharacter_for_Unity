@@ -41,17 +41,21 @@ public class CinemachineHeadBobber : CinemachinePlayerExtension
     /// <param name="previousState"></param>
     private void Handle_NoiseFrequency(PlayerState currentState, PlayerState previousState)
     {
-        //If the state is not grounded we don't want the head bob!
-        if (currentState is not Grounded)
+        switch (currentState)
         {
-            //let's cancel the head bob by setting the frequency to 0
-            noiseVCam.m_FrequencyGain = 0;
-            return;
+            case Grounded:
+                noiseVCam.m_FrequencyGain = ((Grounded)currentState).HeadBobbingFrequency;
+            break;
+
+            case WallRunning:
+                noiseVCam.m_FrequencyGain = ((WallRunning)currentState).HeadBobbingFrequency;
+            break;
+
+            default:
+                //let's cancel the head bob by setting the frequency to 0
+                noiseVCam.m_FrequencyGain = 0;
+            break;
         }
-        
-        //let's get what the frequency is for this grounded state
-        Grounded groundedState = currentState as Grounded;
-        noiseVCam.m_FrequencyGain = groundedState.HeadBobbingFrequency;
     }
 
     /// <summary>

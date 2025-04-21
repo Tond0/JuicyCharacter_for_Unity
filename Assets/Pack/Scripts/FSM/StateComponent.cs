@@ -175,26 +175,26 @@ public class StateComponent : MonoBehaviour
     private void DrawWallRunCheck()
     {
         Vector3 origin = transform.position + Vector3.up * state_Jump.Stats_GroundCheck.height;
-        Vector3 halfExtends = new(0.01f, state_Wallrunning.Wr_detectionSize / 2, state_Wallrunning.Wr_detectionSize / 2);
+        Vector3 halfExtends = new(0.01f, state_Wallrunning.DetectionSize / 2, state_Wallrunning.DetectionSize / 2);
 
         Gizmos.color = Color.blue;
 
         Vector3 boxOrigin;
 
         Vector3 direction = -transform.right;
-        if (Physics.BoxCast(origin, halfExtends, direction, out RaycastHit leftWall, transform.rotation, state_Wallrunning.Wr_detectionDistance))
+        if (Physics.BoxCast(origin, halfExtends, direction, out RaycastHit leftWall, transform.rotation, state_Wallrunning.DetectionDistance))
             boxOrigin = origin + (leftWall.distance * direction);
         else
-            boxOrigin = origin + (state_Wallrunning.Wr_detectionDistance * direction);
+            boxOrigin = origin + (state_Wallrunning.DetectionDistance * direction);
 
         Gizmos.DrawLine(origin, boxOrigin);
         Gizmos.DrawWireCube(boxOrigin, halfExtends * 2);
 
         direction = transform.right;
-        if (Physics.BoxCast(origin, halfExtends, direction, out RaycastHit rightWall, transform.rotation, state_Wallrunning.Wr_detectionDistance))
+        if (Physics.BoxCast(origin, halfExtends, direction, out RaycastHit rightWall, transform.rotation, state_Wallrunning.DetectionDistance))
             boxOrigin = origin + (rightWall.distance * direction);
         else
-            boxOrigin = origin + (state_Wallrunning.Wr_detectionDistance * direction);
+            boxOrigin = origin + (state_Wallrunning.DetectionDistance * direction);
 
         Gizmos.DrawLine(origin, boxOrigin);
         Gizmos.DrawWireCube(boxOrigin, halfExtends * 2);
