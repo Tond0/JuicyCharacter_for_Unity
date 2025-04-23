@@ -140,7 +140,7 @@ public abstract class Controllable : PlayerState
     /// Moves the player with acceleration / deceleration to the desire direction
     /// </summary>
     /// <param name="stateComponent"></param>
-    protected virtual void Move(StateComponent stateComponent, Vector3 direction)
+    protected virtual void Move(StateMachine stateComponent, Vector3 direction)
     {
         //The current velocity
         Vector3 currentVelocity = rb.velocity;
@@ -210,7 +210,7 @@ public abstract class Controllable : PlayerState
     /// Rotate the player accordingly to the camera rotation
     /// </summary>
     /// <param name="stateComponent"></param>
-    protected virtual void Look(StateComponent stateComponent)
+    protected virtual void Look(StateMachine stateComponent)
     {
         Quaternion playerRot = stateComponent.transform.localRotation;
         playerRot.y = Camera.main.transform.localRotation.y;

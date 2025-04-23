@@ -21,7 +21,7 @@ public class CinemachineHeadBobber : CinemachinePlayerExtension
 
         //Events!
         //The event that decide, based on the new state that just changed, the frequency of the noise movement
-        StateComponent.OnStateChange += Handle_NoiseFrequency;
+        StateMachine.OnStateChange += Handle_NoiseFrequency;
 
         //The event that decide, based on the input direction, if we're moving
         InputManager.OnMoveFired += Handle_Noise;

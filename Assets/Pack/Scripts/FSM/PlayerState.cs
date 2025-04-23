@@ -10,7 +10,7 @@ using UnityEngine;
 public abstract class PlayerState
 {
     //The components that handles the states
-    [SerializeField] protected StateComponent stateComponent;
+    [SerializeField] protected StateMachine stateComponent;
 
     //The state, this state, want to transition to
     protected PlayerState nextState;

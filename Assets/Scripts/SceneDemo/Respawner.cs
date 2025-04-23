@@ -8,7 +8,7 @@ public class Respawner : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.TryGetComponent<StateComponent>(out StateComponent player)) return;
+        if (!other.TryGetComponent<StateMachine>(out StateMachine player)) return;
 
         Transform playerTransform = player.transform;
 

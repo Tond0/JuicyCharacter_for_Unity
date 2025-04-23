@@ -9,5 +9,5 @@ using UnityEngine;
 public abstract class CinemachinePlayerExtension : CinemachineExtension
 {
     [SerializeField] protected Rigidbody rb;
-    [SerializeField] protected StateComponent stateComponent;
+    [SerializeField] protected StateMachine stateComponent;
 }

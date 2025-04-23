@@ -16,12 +16,12 @@ public class CinemachineDutchLerp : CinemachinePlayerExtension
     {
         base.OnEnable();
 
-        StateComponent.OnStateChange += Handle_StateDutch;
+        StateMachine.OnStateChange += Handle_StateDutch;
     }
 
     void OnDisable()
     {
-        StateComponent.OnStateChange -= Handle_StateDutch;
+        StateMachine.OnStateChange -= Handle_StateDutch;
     }
 
     private void Handle_StateDutch(PlayerState newState, PlayerState oldState)

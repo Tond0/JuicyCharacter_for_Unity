@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-public class StateComponent : MonoBehaviour
+public class StateMachine : MonoBehaviour
 {
     //State Automata pattern.
     //Save 3 states at the time

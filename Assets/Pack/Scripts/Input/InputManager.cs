@@ -72,7 +72,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
         Cursor.lockState = CursorLockMode.Locked;
 
         //Each time a state is changed we check if we have any input that the new state can use!
-        StateComponent.OnStateChange += CallBuffer;
+        StateMachine.OnStateChange += CallBuffer;
     }
 
     private void OnDisable()
@@ -80,7 +80,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
         //Input won't be processed anymore!
         inputAction.Disable();
 
-        StateComponent.OnStateChange -= CallBuffer;
+        StateMachine.OnStateChange -= CallBuffer;
     }
 
     #region Input Handler Methods

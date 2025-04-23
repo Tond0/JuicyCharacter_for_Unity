@@ -11,7 +11,7 @@ public class YayTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.transform.TryGetComponent<StateComponent>(out StateComponent stateComponent)) return;
+        if (!other.transform.TryGetComponent<StateMachine>(out StateMachine stateComponent)) return;
 
         audioSource.Play();
     }
