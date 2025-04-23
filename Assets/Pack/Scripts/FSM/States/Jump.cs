@@ -9,6 +9,7 @@ public class Jump : Air
 {
     [Space(10)]
     [SerializeField, Tooltip("The force the jump will have ONCE, not continuous")] private float jumpForce;
+    public float JumpForce => jumpForce;
     [SerializeField, Tooltip("When the player is at the top of the jump do we boost the acceleration? This is useful so the player can decide where to land mid air easier")] private float airtTime_AccelMultiplaier;
     [SerializeField, Tooltip("When we change from StandState to FallingState a timer will start and if we press jump before the timer ends, we jump even if we're not on the ground. This decides the timer lenght")] private float coyoteTime = 0.3f;
     [SerializeField, Tooltip("What's the max time that takes (without releasing jump) to reach the top height?")] private float maxJumpDuration;
@@ -37,7 +38,7 @@ public class Jump : Air
     {
         base.Enter();
 
-        //We sure want to jump!s
+        //We sure want to jump!
         wantToJump = true;
 
         //If we release we dont want anymore to jump
@@ -52,10 +53,19 @@ public class Jump : Air
         //First set of gravity
         gravityMultiplaier = gravityMultiplaier_Ascending;
 
-        //Let's Jump! Force up!
+        //Let's work with the velocity
         Vector3 app_velocity = rb.velocity;
-        app_velocity.y = jumpForce;
+        //Let's reset any Y movement
+        app_velocity.y = 0;
         rb.velocity = app_velocity;
+
+        //Let's Jump! Force up!
+        app_velocity.x = 0;
+        app_velocity.y = jumpForce;
+        app_velocity.z = 0;
+
+        //Apply the velocity
+        rb.velocity += app_velocity;
     }
 
     private void Handle_JumpReleased()

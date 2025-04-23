@@ -26,6 +26,9 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     public static event Action OnCrouchFired;
     public static event Action OnCrouchReleased;
 
+    public static event Action OnWallRunFired;
+    public static event Action OnWallRunReleased;
+
     public static event Action OnPauseFired;
     public static event Action OnPauseReleased;
 
@@ -43,6 +46,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     [Header("Input interactions")]
     [SerializeField] private InputTriggerType itt_Sprint;
     [SerializeField] private InputTriggerType itt_CrouchSlide;
+    [SerializeField] private InputTriggerType itt_WallRun;
     [SerializeField] private InputTriggerType itt_Pause;
 
     #region Singleton pattern 
@@ -105,6 +109,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     public void OnJump(InputAction.CallbackContext context) => Handle_GenericInput(context, OnJumpFired, OnJumpReleased, InputTriggerType.HoldNdRelease, InputType.Jump);
     public void OnSprint(InputAction.CallbackContext context) => Handle_GenericInput(context, OnSprintFired, OnSprintReleased, itt_Sprint);
     public void OnCrouch(InputAction.CallbackContext context) => Handle_GenericInput(context, OnCrouchFired, OnCrouchReleased, itt_CrouchSlide, InputType.Crouch);
+    public void OnWallRun(InputAction.CallbackContext context) => Handle_GenericInput(context, OnWallRunFired, OnWallRunReleased, itt_WallRun);
     public void OnPause(InputAction.CallbackContext context) => Handle_GenericInput(context, OnPauseFired, OnPauseReleased, itt_Pause);
 
     #region Handle_GenericInput method variants
@@ -288,7 +293,7 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     #endregion
 
     #region Class Struct Enum
-    
+
     #region Enums
     //Type of interaction
     private enum InputTriggerType { Toggle, HoldNdRelease }

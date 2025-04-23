@@ -14,6 +14,14 @@ public abstract class Grounded : Controllable
     //Getter so that CinemachineHeadbobber.cs can adjust the frequency of the noise effect
     public float HeadBobbingFrequency { get => headBobbingFrequency; }
 
+    public override void Enter()
+    {
+        base.Enter();
+
+        //FIXME: What if the wallrunning state could bind to the OnStateChanged action and do it by itself?
+        stateComponent.State_Wallrunning.OnGroundTouched();
+    }
+    
     public override void FixedRun()
     {
         base.FixedRun();

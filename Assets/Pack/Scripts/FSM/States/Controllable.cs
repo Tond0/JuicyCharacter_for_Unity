@@ -21,13 +21,17 @@ public abstract class Controllable : PlayerState
     public GroundCheck_Stats Stats_GroundCheck => stats_GroundCheck;
 
     //Where are we moving to? this is also stored in the inputmanager but I thought thay having a dedicated variable could cause less confusion
-    protected Vector2 direction;
+    protected Vector2 inputDirection;
 
     //This is needed for the jump and could be prove useful to other effect that might be implemented without touching the MovementStats class
     protected float acceleration_Multiplaier = 1;
 
     //We need it for moving and other things (like floating, jumping, sliding
     [SerializeField] protected Rigidbody rb;
+
+    [Space(5)]
+    [SerializeField, Tooltip("How much will the camera tilt when moving?")] protected float maxDutch = 3.5f;
+    public float MaxDutch => maxDutch;
 
 
     public override void Enter()
@@ -38,7 +42,7 @@ public abstract class Controllable : PlayerState
         InputManager.OnMoveFired += AssignDirection;
 
         //Anytime we transition the direction will be transitioning as well, so that we don't have to repeat the movement input to move the character again
-        direction = InputManager.current.Direction;
+        inputDirection = InputManager.current.Direction;
     }
 
     public override void Exit()
@@ -50,19 +54,17 @@ public abstract class Controllable : PlayerState
     /// Pretty much what the name says
     /// </summary>
     /// <param name="direction"></param>
-    private void AssignDirection(Vector2 direction) => this.direction = direction;
+    private void AssignDirection(Vector2 direction) => this.inputDirection = direction;
 
     public override void FixedRun()
     {
-        Move(stateComponent);
-    }
+        //Direction relative to the camera
+        Vector3 cameraRelativeDirection = RelateTo(inputDirection, Camera.main.transform);
 
-    public override PlayerState Run()
-    {
         //Handle the look inputs
         Look(stateComponent);
 
-        return base.Run();
+        Move(stateComponent, cameraRelativeDirection);
     }
 
     #region GroundCheck method variants
@@ -73,9 +75,9 @@ public abstract class Controllable : PlayerState
     /// <returns></returns>
     protected bool CheckGround(out RaycastHit rayHit)
     {
-        BoxCastSetUp(out Vector3 springDir, out Vector3 origin, out Vector3 halfExtends);
+        GetGroundCheckDetectionInfo(out Vector3 origin, out Vector3 halfExtends);
 
-        if (Physics.BoxCast(origin, halfExtends, -springDir, out rayHit, Quaternion.identity, stats_GroundCheck.heightCheckBuffer))
+        if (Physics.BoxCast(origin, halfExtends, -stateComponent.transform.up, out rayHit, Quaternion.identity, stats_GroundCheck.heightCheckBuffer))
             return true;
 
         return false;
@@ -87,9 +89,9 @@ public abstract class Controllable : PlayerState
     /// <returns></returns>
     protected bool CheckGround()
     {
-        BoxCastSetUp(out Vector3 springDir, out Vector3 origin, out Vector3 halfExtends);
+        GetGroundCheckDetectionInfo(out Vector3 origin, out Vector3 halfExtends);
 
-        if (Physics.BoxCast(origin, halfExtends, -springDir, Quaternion.identity, stats_GroundCheck.heightCheckBuffer))
+        if (Physics.BoxCast(origin, halfExtends, -stateComponent.transform.up, Quaternion.identity, stats_GroundCheck.heightCheckBuffer))
             return true;
 
         return false;
@@ -101,11 +103,8 @@ public abstract class Controllable : PlayerState
     /// <param name="springDir"></param>
     /// <param name="origin"></param>
     /// <param name="halfExtends"></param>
-    private void BoxCastSetUp(out Vector3 springDir, out Vector3 origin, out Vector3 halfExtends)
+    protected void GetGroundCheckDetectionInfo(out Vector3 origin, out Vector3 halfExtends)
     {
-        //We need it the stand so the spring direction force will be up!
-        springDir = stateComponent.transform.up;
-
         //Origin of the ground check depends on the heightOffset we give to it
         origin = stateComponent.transform.position + (Stats_GroundCheck.heightOffset * Vector3.up);
 
@@ -131,7 +130,6 @@ public abstract class Controllable : PlayerState
         if (Physics.SphereCast(ray, stats_GroundCheck.WideCheckBuffer, out rayHit, Stats_GroundCheck.HeightCheckBuffer))
             return true;
         */
-
     }
 
     #endregion
@@ -142,20 +140,17 @@ public abstract class Controllable : PlayerState
     /// Moves the player with acceleration / deceleration to the desire direction
     /// </summary>
     /// <param name="stateComponent"></param>
-    private void Move(StateComponent stateComponent)
+    protected virtual void Move(StateComponent stateComponent, Vector3 direction)
     {
         //The current velocity
         Vector3 currentVelocity = rb.velocity;
 
-        //Direction relative to the camera
-        Vector3 cameraRelativeDirection = RelateTo(direction, Camera.main.transform);
-
         //Desire velocity relative to the camera
-        Vector3 desireVelocity = new Vector3(cameraRelativeDirection.x, 0, cameraRelativeDirection.z) * Stats_Movement.maxSpeed;
-
+        Vector3 desireVelocity = new Vector3(direction.x, 0, direction.z) * Stats_Movement.maxSpeed;
+        
         float maxAcceleration;
         //If we're moving
-        if (direction != Vector2.zero)
+        if (inputDirection != Vector2.zero)
         {
             //Get the dot product of where we want to go and where we are actually going.
             float velDot = Vector3.Dot(currentVelocity.normalized, desireVelocity.normalized);
@@ -215,16 +210,12 @@ public abstract class Controllable : PlayerState
     /// Rotate the player accordingly to the camera rotation
     /// </summary>
     /// <param name="stateComponent"></param>
-    private void Look(StateComponent stateComponent)
+    protected virtual void Look(StateComponent stateComponent)
     {
         Quaternion playerRot = stateComponent.transform.localRotation;
         playerRot.y = Camera.main.transform.localRotation.y;
         playerRot.Normalize();
         rb.rotation = playerRot;
-        return;
-        
-        //DEPRECATED: old method, but without using physics this turn out to be laggy. 
-        //stateComponent.transform.rotation = playerRot;
     }
 
     #region Class Struct
