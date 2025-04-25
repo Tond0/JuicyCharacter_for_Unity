@@ -26,16 +26,13 @@ public class CinemachineDutchLerp : CinemachinePlayerExtension
 
     private void Handle_StateDutch(PlayerState newState, PlayerState oldState)
     {
-        if (newState is not Controllable) return;
-
-        //Get the state max speed
-        Controllable currentControllableState = (Controllable)newState;
+        if (newState is not IMoveableState moveableState) return;
 
         //Get the maxDutch we want to reach.
-        float maxDutch = currentControllableState.MaxDutch;
+        float maxDutch = moveableState.MovementComponent.maxCameraDutch;
 
         //We don't want to lerp the dutch for the wallrunning state.
-        if (currentControllableState is WallRunning) 
+        if (moveableState is WallRunning) 
         {
             //FIXME: Forced to be applied each frame because we don't know the CameraState, Bummer.
             targetDutch = maxDutch;
@@ -43,7 +40,7 @@ public class CinemachineDutchLerp : CinemachinePlayerExtension
         };
 
         //Let's get the max speed
-        stateMaxSpeed = currentControllableState.Stats_Movement.maxSpeed;
+        stateMaxSpeed = moveableState.MovementComponent.maxSpeed;
 
         //Target dutch
         targetDutch = maxDutch;

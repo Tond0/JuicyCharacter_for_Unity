@@ -5,12 +5,18 @@ using System.Timers;
 using UnityEngine;
 
 [Serializable]
-public class Jump : Air
+public class Jump : Air, IMoveableState, ILookableState
 {
+    [Header("Components")]
+    [SerializeField] protected StateMovementComponent movementComponent;
+    public StateMovementComponent MovementComponent => movementComponent;
+    [SerializeField] protected StateLookComponent lookComponent;
+    public StateLookComponent LookComponent => lookComponent;
+
     [Space(10)]
     [SerializeField, Tooltip("The force the jump will have ONCE, not continuous")] private float jumpForce;
     public float JumpForce => jumpForce;
-    [SerializeField, Tooltip("When the player is at the top of the jump do we boost the acceleration? This is useful so the player can decide where to land mid air easier")] private float airtTime_AccelMultiplaier;
+    [SerializeField, Tooltip("When the player is at the top of the jump do we boost the acceleration? This is useful so the player can decide where to land mid air easier")] private float airtTime_AccelMultiplier;
     [SerializeField, Tooltip("When we change from StandState to FallingState a timer will start and if we press jump before the timer ends, we jump even if we're not on the ground. This decides the timer lenght")] private float coyoteTime = 0.3f;
     [SerializeField, Tooltip("What's the max time that takes (without releasing jump) to reach the top height?")] private float maxJumpDuration;
     [SerializeField, Tooltip("What's the min time that we can jump (even if we release the jump button instantaneously)?")] private float minJumpDuration;
@@ -43,6 +49,8 @@ public class Jump : Air
 
         //If we release we dont want anymore to jump
         InputManager.OnJumpReleased += Handle_JumpReleased;
+        movementComponent.BindInput();
+        lookComponent.BindInput();
 
         //We're trying to reach the top of the jump now
         jumpState = JumpState.Ascending;
@@ -78,6 +86,8 @@ public class Jump : Air
     {
         base.Exit();
 
+        movementComponent.UnbindInput();
+        lookComponent.UnbindInput();
         InputManager.OnJumpReleased -= Handle_JumpReleased;
     }
 
@@ -97,7 +107,7 @@ public class Jump : Air
                     || StateDuration >= maxJumpDuration)
                 {
                     //Boost speed
-                    acceleration_Multiplaier = airtTime_AccelMultiplaier;
+                    movementComponent.accelerationMultiplier = airtTime_AccelMultiplier;
                     //Apply new gravity
                     gravityMultiplaier = gravityMultiplaier_InputReleased;
                 }
@@ -111,7 +121,7 @@ public class Jump : Air
                     //Apply new gravity
                     gravityMultiplaier = gravityMultiplaier_TopHeight;
                     //Apply boost to the acceleration
-                    acceleration_Multiplaier = airtTime_AccelMultiplaier;
+                    movementComponent.accelerationMultiplier = airtTime_AccelMultiplier;
 
                     //We can start check the ground again
                     checkGround = true;
@@ -128,7 +138,7 @@ public class Jump : Air
                     jumpState = JumpState.Descending;
 
                     //Reset acceleration boost
-                    acceleration_Multiplaier = 1;
+                    movementComponent.accelerationMultiplier = 1;
                     //Apply new gravity
                     gravityMultiplaier = gravityMultiplaier_Descending;
                 }
@@ -143,13 +153,23 @@ public class Jump : Air
         return nextState;
     }
 
-    protected override Grounded GetNextGroundedState()
+    public override void FixedRun()
     {
-        Grounded nextGroundedState = base.GetNextGroundedState();
+        base.FixedRun();
+
+        Vector3 movementDirection = movementComponent.GetCameraRelativeDirection(movementComponent.MovementDirection, Camera.main.transform);
+        movementComponent.Move(stateMachine, rb, movementDirection);
+
+        lookComponent.Look(stateMachine, rb);
+    }
+
+    protected override Grounded GetLastGroundState()
+    {
+        Grounded nextGroundedState = base.GetLastGroundState();
         
         //Jumping cancel the slide! So we don't want to get back sliding once we touch the ground again.
         if(nextGroundedState is Slide)
-            nextGroundedState = stateComponent.State_Sprint;
+            nextGroundedState = stateMachine.State_Sprint;
 
         return nextGroundedState;
     }

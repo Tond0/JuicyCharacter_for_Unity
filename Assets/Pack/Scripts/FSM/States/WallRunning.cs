@@ -5,20 +5,21 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 [Serializable]
-public class WallRunning : Controllable
+public class WallRunning : Air, IMoveableState, ILookableState
 {
+    [Header("Components")]
+    [SerializeField] private StateMovementComponent movementComponent;
+    public StateMovementComponent MovementComponent => movementComponent;
+    [SerializeField] private StateLookComponent lookComponent;
+    public StateLookComponent LookComponent => lookComponent;
+
     [Header("Wallrun detection")]
-    [SerializeField, Tooltip("Starting from the player transform, what's the min height from the ground to perform a wallrun?")] private float minHeight = .7f;
-    public float MinHeight => minHeight;
     [SerializeField, Tooltip("Starting from the transform of the player (+ height), how far are we checking for a wall to wallrun?")] private float detectionDistance = 1;
     public float DetectionDistance => detectionDistance;
     [SerializeField, Tooltip("How wide is the size of the box checking for a wall to wallrun with?")] private float detectionSize = 0.5f;
     public float DetectionSize => detectionSize;
-    [SerializeField, Tooltip("How wide is the size of the box checking for a wall to wallrun with?")] private float jumpForce = 20;
-
-    [Header("Wallrunning settings")]
-    [SerializeField, Tooltip("Default gravity force is -9.81f")] private float gravityForce = -9.81f;
-    [SerializeField] private float wallrunning_GravityMultiplaier;
+    [SerializeField, Tooltip("How strong we pull out of the wall")] private float jumpForce = 20;
+    public float JumpForce => jumpForce;
 
     [Space(15)]
     [SerializeField, Tooltip("How much should the head move up and down?"), Range(0, 5)] private float headBobbingFrequency = 1.2f;
@@ -44,42 +45,49 @@ public class WallRunning : Controllable
         base.Enter();
 
         //Inputs
-        InputManager.OnMoveFired += TryStopWallrun;
-        InputManager.OnJumpFired += JumpOffWall;
-        
+        InputManager.OnMoveFired += Handle_MoveFired;
+        InputManager.OnJumpFired += Handle_JumpFired;
+        movementComponent.BindInput();
+        lookComponent.BindInput();
+
         //Cancel up momentum
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
     }
 
-    private void JumpOffWall()
+    private void Handle_JumpFired()
     {
-        rb.velocity += (Camera.main.transform.forward + stateComponent.transform.up).normalized * jumpForce;
-        nextState = stateComponent.State_Jump;
+        //Let me wallrun for a bit at least!
+        if(StateDuration < 0.05f) return;
+
+        rb.velocity += (Camera.main.transform.forward + stateMachine.transform.up).normalized * jumpForce;
+        nextState = stateMachine.State_Jump;
+    }
+    
+    private void Handle_MoveFired(Vector2 inputDirection)
+    {
+        if(inputDirection.y > 0) return;
+
+        nextState = stateMachine.State_Falling;
     }
 
     public override void FixedRun()
     {
-        Look(stateComponent);
-
         if(!CheckWallRun())
         {
-            nextState = stateComponent.State_Falling;
+            nextState = stateMachine.State_Falling;
             return;
         }
-
-        //Custom Gravity
-        //FIXME: This need to be moved
-        rb.AddForce(gravityForce * wallrunning_GravityMultiplaier * Vector3.up, ForceMode.Acceleration);
 
         //Get the normal of the wall
         Vector3 wallNormal = wallHit.normal;
         //Get the direction we should wallrun with.
-        wallForward = Vector3.Cross(wallHit.normal, stateComponent.transform.up);
-
-        if(Vector3.Dot(wallForward, stateComponent.transform.forward) < 0)
+        wallForward = Vector3.Cross(wallHit.normal, stateMachine.transform.up);
+        //Flip the direction according to the player forward direction.
+        if(Vector3.Dot(wallForward, stateMachine.transform.forward) < 0)
             wallForward = -wallForward;
 
-        Move(stateComponent, wallForward);
+        movementComponent.Move(stateMachine, rb, wallForward);
+        lookComponent.Look(stateMachine, rb);
 
         //Stick to wall
         rb.AddForce(-wallNormal * 100, ForceMode.Force);
@@ -89,8 +97,10 @@ public class WallRunning : Controllable
     {
         base.Exit();
 
-        InputManager.OnMoveFired -= TryStopWallrun;
-        InputManager.OnJumpFired -= JumpOffWall;
+        InputManager.OnMoveFired -= Handle_MoveFired;
+        InputManager.OnJumpFired -= Handle_JumpFired;
+        movementComponent.UnbindInput();
+        lookComponent.UnbindInput();
 
         canWallRunSameWall = false;
     }
@@ -101,18 +111,8 @@ public class WallRunning : Controllable
     /// <returns></returns>
     public bool CheckWallRunInitializer()
     {
-        //Ground min height detection.
-        //Check if we are height enought
-        GetGroundCheckDetectionInfo(out Vector3 origin, out Vector3 halfExtends);
-        //If we spot the ground, then we're too close to it and we can't wallrun.
-        //if(Physics.BoxCast(origin, halfExtends, -stateComponent.transform.up, Quaternion.identity, minHeight)) return false;
-        if(CheckGround())
-        {
-            return false;
-        }
-
-        bool isLeftRunnable = CheckWallRunnableWall(-stateComponent.transform.right, out RaycastHit leftHit);
-        bool isRightRunnable = CheckWallRunnableWall(stateComponent.transform.right, out RaycastHit rightHit);
+        bool isLeftRunnable = CheckWallRunnableWall(-stateMachine.transform.right, out RaycastHit leftHit);
+        bool isRightRunnable = CheckWallRunnableWall(stateMachine.transform.right, out RaycastHit rightHit);
 
         RaycastHit currentWallHit = new();
 
@@ -123,7 +123,7 @@ public class WallRunning : Controllable
             currentWallHit = leftHit;
         else if (isRightRunnable)
             currentWallHit = rightHit;
-        
+
         //Can't run on the same wall twice!
         if(currentWallHit.colliderInstanceID == wallHit.colliderInstanceID 
             && !canWallRunSameWall)
@@ -140,22 +140,12 @@ public class WallRunning : Controllable
     /// <returns></returns>
     private bool CheckWallRun()
     {
-        //Ground min height detection.
-        //Check if we are height enought
-        GetGroundCheckDetectionInfo(out Vector3 origin, out Vector3 halfExtends);
-        //If we spot the ground, then we're too close to it and we can't wallrun.
-        //if(Physics.BoxCast(origin, halfExtends, -stateComponent.transform.up, Quaternion.identity, minHeight)) return false;
-        if(CheckGround())
-        {
-            return false;
-        }
-
         //If we're looking the opposite direction we stop the wallrun.
-        if(Vector3.Dot(rb.velocity.normalized, stateComponent.transform.forward.normalized) < 0)
-            return false;
+        // if(Vector3.Dot(rb.velocity.normalized, stateMachine.transform.forward.normalized) < 0)
+        //     return false;
 
-        bool isLeftRunnable = CheckWallRunnableWall(-stateComponent.transform.right, out RaycastHit leftHit);
-        bool isRightRunnable = CheckWallRunnableWall(stateComponent.transform.right, out RaycastHit rightHit);
+        bool isLeftRunnable = CheckWallRunnableWall(-stateMachine.transform.right, out RaycastHit leftHit);
+        bool isRightRunnable = CheckWallRunnableWall(stateMachine.transform.right, out RaycastHit rightHit);
 
         RaycastHit currentWallHit = new();
 
@@ -166,7 +156,7 @@ public class WallRunning : Controllable
             currentWallHit = leftHit;
         else if (isRightRunnable)
             currentWallHit = rightHit;
-        
+
         //Is it the same wall?
         if(currentWallHit.colliderInstanceID == wallHit.colliderInstanceID)
         {
@@ -187,20 +177,13 @@ public class WallRunning : Controllable
 
     private bool CheckWallRunnableWall(Vector3 direction, out RaycastHit hitInfo)
     {
-        Vector3 origin = stateComponent.transform.position + Vector3.up * stats_GroundCheck.height;
+        Vector3 origin = stateMachine.transform.position + Vector3.up * stateMachine.State_Stand.FloatableComponent.Height;
         Vector3 halfExtends = new(0.01f, detectionSize / 2, detectionSize / 2);
 
-        if(Physics.BoxCast(origin, halfExtends, direction, out hitInfo, Quaternion.identity, detectionDistance))
+        if(Physics.BoxCast(origin, halfExtends, direction, out hitInfo, stateMachine.transform.rotation, detectionDistance))
             Debug.DrawRay(origin, direction * detectionDistance, Color.cyan);
 
-        return Physics.BoxCast(origin, halfExtends, direction, out hitInfo, Quaternion.identity, detectionDistance);
-    }
-    
-    private void TryStopWallrun(Vector2 inputDirection)
-    {
-        if(inputDirection.y > 0) return;
-
-        nextState = stateComponent.State_Falling;
+        return Physics.BoxCast(origin, halfExtends, direction, out hitInfo, stateMachine.transform.rotation, detectionDistance);
     }
 
     /// <summary>
@@ -210,7 +193,7 @@ public class WallRunning : Controllable
     /// <returns></returns>
     public float GetDutchWallrunningDirection()
     {
-        bool isLeftRunnable = CheckWallRunnableWall(-stateComponent.transform.right, out RaycastHit leftHit);
+        bool isLeftRunnable = CheckWallRunnableWall(-stateMachine.transform.right, out RaycastHit leftHit);
 
         return leftHit.colliderInstanceID == wallHit.colliderInstanceID ? -1 : 1;
     }

@@ -6,28 +6,53 @@ using static UnityEngine.UI.Image;
 
 
 [Serializable]
-public class Crouch : Grounded
+public class Crouch : Grounded, IMoveableState, ILookableState
 {
+    [Header("Components")]
+    [SerializeField] private StateMovementComponent movementComponent;
+    public StateMovementComponent MovementComponent => movementComponent;
+
+    [SerializeField] private StateLookComponent lookComponent;
+    public StateLookComponent LookComponent => lookComponent;
+
     [Header("Top head detection")]
     [SerializeField, Tooltip("This transform will be use to check if the player can stand, so place in on the head of the player!")] private Transform topHead;
     [SerializeField, Tooltip("How big is going to be the boxcast for the detection?")] private float topWideCheck = 1;
     [SerializeField, Tooltip("How far is going to be the boxcast for the detection?")] private float topHeightCheck = 0.4f;
+
     public override void Enter()
     {
         base.Enter();
 
-        //Events (they all go to stand)
-        InputManager.OnCrouchFired += Handle_CrochFireNdReleased;
-        InputManager.OnCrouchReleased += Handle_CrochFireNdReleased;
-        InputManager.OnJumpFired += Handle_CrochFireNdReleased;
+        movementComponent.BindInput();
+        lookComponent.BindInput();
+
+        //Events (they all go to stand lol)
+        InputManager.OnCrouchFired += Handle_CrouchFired;
+        InputManager.OnCrouchReleased += Handle_CrouchReleased;
+        InputManager.OnJumpFired += Handle_JumpFired;
     }
 
-    private void Handle_CrochFireNdReleased()
+    private void Handle_CrouchFired() => TryStand();
+    private void Handle_CrouchReleased() => TryStand();
+    private void Handle_JumpFired() => TryStand();
+
+    private void TryStand()
     {
         //If we can stand...
         if (!CheckTop()) return;
         //We stand!
-        nextState = stateComponent.State_Stand;
+        nextState = stateMachine.State_Stand;
+    }
+
+    public override void FixedRun()
+    {
+        base.FixedRun();
+
+        Vector3 movementDirection = movementComponent.GetCameraRelativeDirection(movementComponent.MovementDirection, Camera.main.transform);
+        movementComponent.Move(stateMachine, rb, movementDirection);
+
+        lookComponent.Look(stateMachine, rb);
     }
 
     /// <summary>
@@ -44,10 +69,12 @@ public class Crouch : Grounded
 
     public override void Exit()
     {
-        base.Exit();
+        //Unbind inputs
+        movementComponent.UnbindInput();
+        lookComponent.UnbindInput();
 
-        InputManager.OnCrouchFired -= Handle_CrochFireNdReleased;
-        InputManager.OnCrouchReleased -= Handle_CrochFireNdReleased;
-        InputManager.OnJumpFired -= Handle_CrochFireNdReleased;
+        InputManager.OnCrouchFired -= Handle_CrouchFired;
+        InputManager.OnCrouchReleased -= Handle_CrouchReleased;
+        InputManager.OnJumpFired -= Handle_JumpFired;
     }
 }

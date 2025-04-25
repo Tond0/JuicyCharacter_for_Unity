@@ -7,59 +7,37 @@ using UnityEngine;
 /// <summary>
 /// Any state that inherit from this abstract class is going to be on the ground
 /// </summary>
-public abstract class Grounded : Controllable
+public abstract class Grounded : PlayerState, IGroundCheckableState, IFloatableState
 {
+    [Header("Components")]
+    [SerializeField] protected StateGroundCheckComponent groundCheckComponent;
+    public StateGroundCheckComponent GroundCheckComponent => groundCheckComponent;
+    [SerializeField] protected StateFloatComponent floatComponent;
+    public StateFloatComponent FloatableComponent => floatComponent;
+    
     [Space(15)]
     [SerializeField, Tooltip("How much should the head move up and down?"), Range(0, 5)] private float headBobbingFrequency = 1;
     //Getter so that CinemachineHeadbobber.cs can adjust the frequency of the noise effect
     public float HeadBobbingFrequency { get => headBobbingFrequency; }
+
+
 
     public override void Enter()
     {
         base.Enter();
 
         //FIXME: What if the wallrunning state could bind to the OnStateChanged action and do it by itself?
-        stateComponent.State_Wallrunning.OnGroundTouched();
+        stateMachine.State_Wallrunning.OnGroundTouched();
     }
     
     public override void FixedRun()
     {
-        base.FixedRun();
-
         //Check if we're still touching the ground
-        if (CheckGround(out RaycastHit rayHit))
+        if (groundCheckComponent.CheckGround(stateMachine, out RaycastHit rayHit))
             //If we are, then float!
-            Float(stateComponent.transform, rb, rayHit, Stats_GroundCheck.height, Stats_GroundCheck.dampingForce, Stats_GroundCheck.springStrength);
+            floatComponent.Float(stateMachine, rb, rayHit);
         else
             //If we are not then we're falling
-            nextState = stateComponent.State_Falling;
-    }
-
-    /// <summary>
-    /// Method that handle the spring float force, this approach kills any problem with the slopes and the friction that the character may have moving on the ground!
-    /// </summary>
-    /// <param name="transform"></param>
-    /// <param name="rb"></param>
-    /// <param name="rayHit"></param>
-    /// <param name="height"></param>
-    /// <param name="dampingForce"></param>
-    /// <param name="springStrength"></param>
-    protected void Float(Transform transform, Rigidbody rb, RaycastHit rayHit, float height, float dampingForce, float springStrength)
-    {
-        //We apply the spring formula ( springForce = offset - damping; )
-        //offset = how far is between the position it should be and the current position.
-        float offset = height - rayHit.distance;
-
-        //Let's calculate the velocity relative to the direction of the spring
-        float rayDirVel = Vector3.Dot(transform.up, rb.velocity);
-
-        //Let's apply the formula ( damping = velocity * dampingForce )
-        float damping = rayDirVel * -dampingForce;
-
-        //Always the same formula ( springForce = offset - damping; )
-        float springForce = offset * springStrength - damping;
-
-        //Let's add this force
-        rb.AddForce(transform.up * springForce);
+            nextState = stateMachine.State_Falling;
     }
 }

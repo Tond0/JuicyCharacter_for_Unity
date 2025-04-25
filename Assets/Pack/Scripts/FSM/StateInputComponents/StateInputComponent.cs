@@ -1,11 +1,7 @@
 using System;
 using UnityEngine;
 
-public abstract class StateComponent
-{
-    [SerializeField] protected StateMachine stateMachine;
-    [SerializeField] protected Rigidbody rb;
-}
+public abstract class StateComponent {}
 
 public abstract class StateInputComponent : StateComponent
 {

@@ -33,8 +33,8 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     public static event Action OnPauseReleased;
 
     //We save and share the direction (only readable) so that even when we're changing state we know whitch direction we're moving!
-    private Vector2 direction;
-    public Vector2 Direction { get => direction; }
+    private Vector2 movingDirection;
+    public Vector2 MovingDirection { get => movingDirection; }
 
     [Header("Input Buffer")]
     [SerializeField, Tooltip("How many inputs can be stored in the buffer? Newer input will take the place of the oldest input in the buffer.")] private int inputBuffering_MaxInputs;
@@ -86,12 +86,12 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
     #region Input Handler Methods
     public void OnMove(InputAction.CallbackContext context)
     {
-        direction = context.ReadValue<Vector2>();
+        movingDirection = context.ReadValue<Vector2>();
         
         //Not good for gamepad! 
         //direction.Normalize();
 
-        OnMoveFired?.Invoke(direction);
+        OnMoveFired?.Invoke(movingDirection);
     }
 
     //Cinemachine will automatically handle the camera movement, but whit this event call we can adjust the player facing direction

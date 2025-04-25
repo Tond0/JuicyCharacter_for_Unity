@@ -21,10 +21,7 @@ public class Slide : Grounded
         InputManager.OnJumpFired += Handle_JumpFired;
     }
 
-    private void Handle_JumpFired()
-    {
-        nextState = stateComponent.State_Jump;
-    }
+    private void Handle_JumpFired() => nextState = stateMachine.State_Jump;
 
     public override void FixedRun()
     {
@@ -35,13 +32,13 @@ public class Slide : Grounded
             if (StateDuration >= slideDuration)
             {
                 //Duration ended we transition to crouch
-                nextState = stateComponent.State_Crouch;
+                nextState = stateMachine.State_Crouch;
             }
         }
         //Even if we're not on a slope we check if we're are going upwards
         else if (rb.velocity.y > 5)
             //We stop the slide
-            nextState = stateComponent.State_Crouch;
+            nextState = stateMachine.State_Crouch;
 
         //Keep apply the slide
         rb.velocity += rb.transform.forward * continuosForce;
@@ -51,14 +48,12 @@ public class Slide : Grounded
 
     public override void Exit()
     {
-        base.Exit();
-
         InputManager.OnJumpFired -= Handle_JumpFired;
     }
     
     private bool CheckSlope()
     {
-        if (CheckGround(out RaycastHit hitInfo))
+        if (groundCheckComponent.CheckGround(stateMachine, out RaycastHit hitInfo))
         {
             float angle = Vector3.Angle(Vector3.up, hitInfo.normal);
             return angle < maxSlopeAngle && angle != 0;

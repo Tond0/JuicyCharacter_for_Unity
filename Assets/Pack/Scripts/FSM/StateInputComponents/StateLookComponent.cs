@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[Serializable]
 public class StateLookComponent : StateInputComponent
 {
     private Vector2 lookDirection;
@@ -18,7 +19,7 @@ public class StateLookComponent : StateInputComponent
     /// <summary>
     /// Rotate the player accordingly to the camera rotation.
     /// </summary>
-    protected virtual void Look()
+    public void Look(StateMachine stateMachine, Rigidbody rb)
     {
         Quaternion playerRot = stateMachine.transform.localRotation;
         playerRot.y = Camera.main.transform.localRotation.y;

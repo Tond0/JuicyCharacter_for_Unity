@@ -12,7 +12,7 @@ public class StateMachine : MonoBehaviour
 {
     //State Automata pattern.
     //Save 3 states at the time
-    static int maxStateQueueSize = 3;
+    static int maxStateQueueSize = 5;
     private Queue<PlayerState> stateQueue = new(maxStateQueueSize);
     //Can be useful to know in which state is the player in
     public PlayerState CurrentState => stateQueue.Last();
@@ -21,11 +21,12 @@ public class StateMachine : MonoBehaviour
         get
         {
             if (stateQueue.Count > 1)
-                return stateQueue.ElementAt(1);
+                return stateQueue.ElementAt(stateQueue.Count - 2);
             else
                 return null;
         }
     }
+    public Queue<PlayerState> StateQueue => stateQueue;
 
     //Whenever we change state this event will scream out loud the state we're transitioning from and the state we're transition to!
     public static event Action<PlayerState, PlayerState> OnStateChange;
@@ -69,7 +70,7 @@ public class StateMachine : MonoBehaviour
         CurrentState.FixedRun();
 
         //Debug
-        txt_VelocityDebug?.SetText(rb_debug.velocity.ToString());
+        txt_VelocityDebug?.SetText(transform.InverseTransformDirection(rb_debug.velocity).ToString());
     }
 
     /// <summary>
@@ -130,20 +131,17 @@ public class StateMachine : MonoBehaviour
         if(!EditorApplication.isPlaying) return;
 
         //Is this state controllable? (non controllable state won't have ground detection)
-        if (CurrentState is not Controllable) return;
+        if (CurrentState is not IGroundCheckableState groundCheckableState) return;
 
-        Controllable controllableState = CurrentState as Controllable;
-        //The current groundCheck settings
-        Controllable.GroundCheck_Stats groundCheck_Stats = controllableState.Stats_GroundCheck;
+        StateGroundCheckComponent groundCheckComponent = groundCheckableState.GroundCheckComponent;
 
-
-        Vector3 origin = transform.position + (groundCheck_Stats.heightOffset * Vector3.up);
+        Vector3 origin = transform.position + (groundCheckComponent.HeightOffset * Vector3.up);
         //Direction of the spring
         Vector3 springDir = transform.up;
 
 
         Gizmos.color = Color.green;
-        Gizmos.DrawRay(origin, -springDir * groundCheck_Stats.heightOffset);
+        Gizmos.DrawRay(origin, -springDir * groundCheckComponent.HeightCheckBuffer);
 
         /* DEPRECATED 5 raycast method
         Gizmos.DrawRay(origin + Vector3.right * groundCheck_Stats.WideCheckBuffer / 2, -springDir * groundCheck_Stats.HeightCheckBuffer);
@@ -160,21 +158,21 @@ public class StateMachine : MonoBehaviour
         //Boxcast method
 
         //Size of the boxcast
-        Vector3 size = new(groundCheck_Stats.wideCheckBuffer, 0.01f * 2, groundCheck_Stats.wideCheckBuffer);
+        Vector3 size = new(groundCheckComponent.WideCheckBuffer, 0.01f * 2, groundCheckComponent.WideCheckBuffer);
 
         Vector3 boxOrigin;
 
-        if (Physics.BoxCast(origin, size / 2, -springDir, out RaycastHit hitInfo, Quaternion.identity, groundCheck_Stats.heightCheckBuffer))
+        if (Physics.BoxCast(origin, size / 2, -springDir, out RaycastHit hitInfo, Quaternion.identity, groundCheckComponent.HeightCheckBuffer))
             boxOrigin = origin + (hitInfo.distance * Vector3.down);
         else
-            boxOrigin = origin + (groundCheck_Stats.heightCheckBuffer * Vector3.down);
+            boxOrigin = origin + (groundCheckComponent.HeightCheckBuffer * Vector3.down);
 
         Gizmos.DrawWireCube(boxOrigin, size);
     }
 
     private void DrawWallRunCheck()
     {
-        Vector3 origin = transform.position + Vector3.up * state_Jump.Stats_GroundCheck.height;
+        Vector3 origin = transform.position + Vector3.up * state_Jump.GroundCheckComponent.HeightOffset;
         Vector3 halfExtends = new(0.01f, state_Wallrunning.DetectionSize / 2, state_Wallrunning.DetectionSize / 2);
 
         Gizmos.color = Color.blue;

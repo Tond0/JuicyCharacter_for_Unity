@@ -1,13 +1,18 @@
 using System;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[Serializable]
 public class StateMovementComponent : StateInputComponent
 {
-    [SerializeField] public float maxSpeed;
+    [SerializeField, Tooltip("If this is set to 0, it will inherit the maxSpeed from the previous State")] public float maxSpeed;
     [SerializeField] public float maxAcceleration;
     [SerializeField] public float maxDeceleration;
     [SerializeField, Tooltip("The curve which decides how much boost to the acceleration we need to apply relate to the direction we want to move to and we're actually moving to. (t = 0 => we want to move in the opposite direction, t = 1 => we're moving in the same direction")] public AnimationCurve accelerationFactor;
+    [SerializeField, Tooltip("Max camera angle when turning left and right")] public float maxCameraDutch = 1;
+
+    [NonSerialized] public float accelerationMultiplier = 1;
 
     //The current direction we want to move to.
     protected Vector2 movementDirection;
@@ -16,22 +21,25 @@ public class StateMovementComponent : StateInputComponent
     {
         //Anytime we press the movements keys we assign it the direction
         InputManager.OnMoveFired += SetInputDirection;
+        movementDirection = InputManager.current.MovingDirection;
     }
     public override void UnbindInput()
     {
         InputManager.OnMoveFired -= SetInputDirection;
     }
 
-    public void Move(Vector3 direction)
+    public void Move(StateMachine stateMachine, Rigidbody rb, Vector3 direction)
     {
-        //Direction relative to the camera
-        Vector3 cameraRelativeDirection = GetCameraRelativeDirection(movementDirection, Camera.main.transform);
+        //FIXME: This should not be updated every frame, but only when the state changes.
+        //If the direction is 0, then we just set it to the previous state MaxSpeed
+        if(maxSpeed == 0)
+            maxSpeed = GetPreviousMaxSpeed(stateMachine);
 
         //The current velocity
         Vector3 currentVelocity = rb.velocity;
 
         //Desire velocity relative to the camera
-        Vector3 desireVelocity = new Vector3(cameraRelativeDirection.x, 0, cameraRelativeDirection.z) * maxSpeed;
+        Vector3 desireVelocity = new Vector3(direction.x, 0, direction.z) * maxSpeed;
 
         float maxStepAcceleration;
         //If we're moving
@@ -49,7 +57,7 @@ public class StateMovementComponent : StateInputComponent
         }
 
         //The max acceleration that can be handle this frame
-        float maxSpeedChange = maxStepAcceleration * Time.deltaTime /** acceleration_Multiplaier*/;
+        float maxSpeedChange = maxStepAcceleration * Time.deltaTime * accelerationMultiplier;
 
         //Update the velocity
         Vector3 finalVelocity = Vector3.MoveTowards(currentVelocity, desireVelocity, maxSpeedChange);
@@ -67,6 +75,23 @@ public class StateMovementComponent : StateInputComponent
         Debug.DrawRay(stateMachine.transform.position, finalVelocity, Color.green);
     }
 
+    /// <summary>
+    /// /// Get the maxSpeed of the previous state, if it's 0 then we just return the maxSpeed of the current state.
+    /// </summary>
+    /// <param name="stateMachine"></param>
+    /// <returns></returns>
+    private float GetPreviousMaxSpeed(StateMachine stateMachine)
+    {
+        for(int i = stateMachine.StateQueue.Count - 2; i >= 0; i--)
+        {
+            if(stateMachine.StateQueue.ElementAt(i) is IMoveableState moveableState && moveableState.MovementComponent.maxSpeed != 0)
+                return moveableState.MovementComponent.maxSpeed;
+        }
+
+        Debug.LogError("There's no state with maxSpeed in the queue, please increase maxQueueCount in StateMachine.cs!");
+        return 0;
+    }
+
 
     /// <summary>
     /// Pretty much what the name says
@@ -78,12 +103,12 @@ public class StateMovementComponent : StateInputComponent
     /// Calculate the relative camera direction, (I know transform.InverseTransformDirection does exist, I'm just testing myself here)
     /// </summary>
     /// <param name="direction"></param>
-    /// <param name="relativeTransform"></param>
+    /// <param name="cameraTransform"></param>
     /// <returns></returns>
-    protected Vector3 GetCameraRelativeDirection(Vector2 direction, Transform relativeTransform)
+    public Vector3 GetCameraRelativeDirection(Vector2 direction, Transform cameraTransform)
     {
-        Vector3 camForward = relativeTransform.forward;
-        Vector3 camRight = relativeTransform.right;
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
 
         camForward.y = 0;
         camRight.y = 0;

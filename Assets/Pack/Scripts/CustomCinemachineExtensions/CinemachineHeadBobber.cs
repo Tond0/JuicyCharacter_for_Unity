@@ -49,6 +49,8 @@ public class CinemachineHeadBobber : CinemachinePlayerExtension
 
             case WallRunning:
                 noiseVCam.m_FrequencyGain = ((WallRunning)currentState).HeadBobbingFrequency;
+                //Apply the custom noise preset
+                noiseVCam.m_NoiseProfile = customNoise;
             break;
 
             default:
