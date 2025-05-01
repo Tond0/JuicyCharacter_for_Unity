@@ -19,6 +19,7 @@ public class Sprint : Grounded, IMoveableState, ILookableState
     [Space(15)]
     [Header("Sprint Settings")]
     [SerializeField] private float minSpeedToSprint;
+    [SerializeField] private float minSpeedToSlide = 5;
 
     public override void Enter()
     {
@@ -26,25 +27,20 @@ public class Sprint : Grounded, IMoveableState, ILookableState
         movementComponent.BindInput();
         lookComponent.BindInput();
 
-        InputManager.OnSprintFired += Handle_SprintFireNdReleased;
-        InputManager.OnSprintReleased += Handle_SprintFireNdReleased;
-        InputManager.OnJumpFired += Handle_JumpFired;
-        InputManager.OnCrouchFired += Handle_CrouchFired;
+        InputManager.OnJumpFiredRef.Delegate += Handle_JumpFired;
+        InputManager.OnCrouchFiredRef.Delegate += Handle_CrouchFired;
     }
 
     private void Handle_CrouchFired()
     {
+        if(rb.velocity.magnitude < minSpeedToSlide) return;
+
         nextState = stateMachine.State_Slide;
     }
 
     private void Handle_JumpFired()
     {
         nextState = stateMachine.State_Jump;
-    }
-
-    private void Handle_SprintFireNdReleased()
-    {
-        nextState = stateMachine.State_Stand;
     }
 
     public override void FixedRun()
@@ -65,20 +61,25 @@ public class Sprint : Grounded, IMoveableState, ILookableState
         movementComponent.UnbindInput();
         lookComponent.UnbindInput();
 
-        InputManager.OnSprintFired -= Handle_SprintFireNdReleased;
-        InputManager.OnSprintReleased -= Handle_SprintFireNdReleased;
-        InputManager.OnJumpFired -= Handle_JumpFired;
-        InputManager.OnCrouchFired -= Handle_CrouchFired;
+        InputManager.OnJumpFiredRef.Delegate -= Handle_JumpFired;
+        InputManager.OnCrouchFiredRef.Delegate -= Handle_CrouchFired;
     }
 
     public override PlayerState Run()
     {
         // We always check if we're running enough fast to be sprinting or walking!
         Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
-        bool canSprint = localVelocity.z >= minSpeedToSprint;
+        bool canSprint = Mathf.Abs(localVelocity.z) >= minSpeedToSprint;
+
+        if(movementComponent.MovementDirection.magnitude <= 0)
+            canSprint = false;
+
+        if(!InputManager.current.WantsToSprint)
+            canSprint = false;
 
         if (!canSprint)
             nextState = stateMachine.State_Stand;
+
 
         // Other input check (Higher priority)
         base.Run();

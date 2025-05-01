@@ -25,7 +25,7 @@ public abstract class Air : PlayerState, IGroundCheckableState
     {
         base.Enter();
 
-        InputManager.OnWallRunFired += Handle_WallRunFired;
+        InputManager.OnWallRunFiredRef.Delegate += Handle_WallRunFired;
     }
 
     //Check for any wall to wallrun
@@ -51,21 +51,15 @@ public abstract class Air : PlayerState, IGroundCheckableState
 
     public override void Exit()
     {
-        InputManager.OnWallRunFired -= Handle_WallRunFired;
+        InputManager.OnWallRunFiredRef.Delegate -= Handle_WallRunFired;
     }
 
     /// <summary>
     /// Get the last grounded state, if the previous state is not grounded then we return the Stand state.
+    /// This will be override by the Jump state.
     /// </summary>
     /// <returns></returns>
-    protected virtual Grounded GetLastGroundState()
-    { 
-        if(stateMachine.PreviousState is Grounded grounded)
-            return grounded;
-        else
-            return stateMachine.State_Stand;
-            
-    }
+    protected virtual Grounded GetLastGroundState() => stateMachine.LastGroundedState;
 
     /// <summary>
     /// Just apply gravity, to edit this gravity force please use the gravityMultiplaier variable

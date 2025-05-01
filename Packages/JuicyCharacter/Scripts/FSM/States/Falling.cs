@@ -26,7 +26,7 @@ public class Falling : Air, IMoveableState, ILookableState
         canCoyoteJump = true;
         
         //If we're jumping while falling we check the coyote time
-        InputManager.OnJumpFired += CheckCoyoteTime;
+        InputManager.OnJumpFiredRef.Delegate += CheckCoyoteTime;
         movementComponent.BindInput();
         lookComponent.BindInput();
 
@@ -53,7 +53,7 @@ public class Falling : Air, IMoveableState, ILookableState
 
         movementComponent.UnbindInput();
         lookComponent.UnbindInput();
-        InputManager.OnJumpFired -= CheckCoyoteTime;
+        InputManager.OnJumpFiredRef.Delegate -= CheckCoyoteTime;
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class Falling : Air, IMoveableState, ILookableState
     private void Handle_CoyoteTimeEnd(object sender, ElapsedEventArgs e)
     {
         canCoyoteJump = false;
-        InputManager.OnJumpFired -= CheckCoyoteTime;
+        InputManager.OnJumpFiredRef.Delegate -= CheckCoyoteTime;
     }
 
     /// <summary>

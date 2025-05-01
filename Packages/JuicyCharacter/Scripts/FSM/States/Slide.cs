@@ -9,7 +9,9 @@ public class Slide : Grounded
     [SerializeField, Tooltip("Start impulse, applied once")] private float startForce;
     [SerializeField, Tooltip("The impulse applied continuosly")] private float continuosForce;
     [SerializeField, Tooltip("How height can we climb a slope sliding before stopping the slide?")] private float maxSlopeAngle;
-    [SerializeField, Tooltip("How long should the slide last?")] private float slideDuration;
+    [SerializeField, Tooltip("How long should the slide last?")] private float maxSlideDuration;
+    [SerializeField, Tooltip("How long should the slide last?")] private float minSlideDuration;
+    private bool wantsToSlideCance = false;
     public override void Enter()
     {
         base.Enter();
@@ -18,7 +20,29 @@ public class Slide : Grounded
         rb.velocity = rb.transform.forward * startForce;
 
         //Slide cancel if we jump
-        InputManager.OnJumpFired += Handle_JumpFired;
+        InputManager.OnJumpFiredRef.Delegate += Handle_JumpFired;
+        InputManager.OnCrouchReleasedRef.Delegate += Handle_CrouchReleased;
+    }
+
+    private void Handle_CrouchReleased() 
+    {
+        if(StateDuration < minSlideDuration)
+        { 
+            wantsToSlideCance = true;
+            return;
+        }
+
+        SlideCancel();
+    }
+
+    private void SlideCancel()
+    {
+        if(stateMachine.State_Crouch.CheckTop())
+            //We can stand! 
+            nextState = stateMachine.State_Stand;
+        else
+            //If we can stand...
+            nextState = stateMachine.State_Crouch;
     }
 
     private void Handle_JumpFired() => nextState = stateMachine.State_Jump;
@@ -29,7 +53,7 @@ public class Slide : Grounded
         if (!CheckSlope())
         {
             //We count the duration
-            if (StateDuration >= slideDuration)
+            if (StateDuration >= maxSlideDuration)
             {
                 //Duration ended we transition to crouch
                 nextState = stateMachine.State_Crouch;
@@ -43,12 +67,18 @@ public class Slide : Grounded
         //Keep apply the slide
         rb.velocity += rb.transform.forward * continuosForce;
 
+        if(wantsToSlideCance)
+            SlideCancel();
+
         base.FixedRun();
     }
 
     public override void Exit()
     {
-        InputManager.OnJumpFired -= Handle_JumpFired;
+        wantsToSlideCance = false;
+
+        InputManager.OnJumpFiredRef.Delegate -= Handle_JumpFired;
+        InputManager.OnCrouchReleasedRef.Delegate -= Handle_CrouchReleased;
     }
     
     private bool CheckSlope()

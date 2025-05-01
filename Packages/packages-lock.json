@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.tondo.juicymovement": {
+      "version": "file:JuicyCharacter",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.cinemachine": "2.10.1",
+        "com.unity.inputsystem": "1.7.0"
+      }
+    },
     "com.unity.cinemachine": {
       "version": "2.10.1",
       "depth": 0,

@@ -46,7 +46,7 @@ public class WallRunning : Air, IMoveableState, ILookableState
 
         //Inputs
         InputManager.OnMoveFired += Handle_MoveFired;
-        InputManager.OnJumpFired += Handle_JumpFired;
+        InputManager.OnJumpFiredRef.Delegate += Handle_JumpFired;
         movementComponent.BindInput();
         lookComponent.BindInput();
 
@@ -98,7 +98,7 @@ public class WallRunning : Air, IMoveableState, ILookableState
         base.Exit();
 
         InputManager.OnMoveFired -= Handle_MoveFired;
-        InputManager.OnJumpFired -= Handle_JumpFired;
+        InputManager.OnJumpFiredRef.Delegate -= Handle_JumpFired;
         movementComponent.UnbindInput();
         lookComponent.UnbindInput();
 

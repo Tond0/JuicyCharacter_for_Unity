@@ -1,0 +1,22 @@
+{
+  "name": "com.tondo.juicymovement",
+  "version": "1.0.1",
+  "displayName": "Juicy Movement",
+  "description": "Advance input manager + FSM automata as player controller",
+  "unity": "2022.3",
+  "UnityRelease": "0b5",
+  "keywords": [
+    "keyword1",
+    "keyword2",
+    "keyword3"
+  ],
+  "author": {
+    "name": "Example Name",
+    "email": "example@unity.com"
+  },
+  "type": "tool",
+  "dependencies": {
+    "com.unity.cinemachine": "2.10.1",
+    "com.unity.inputsystem": "1.7.0"
+  }
+}

@@ -1,18 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Callbacks;
 using UnityEngine;
+using TMPro;
 
 public class StateMachine : MonoBehaviour
 {
     //State Automata pattern.
     //Save 3 states at the time
-    static int maxStateQueueSize = 5;
+    static int maxStateQueueSize = 10;
     private Queue<PlayerState> stateQueue = new(maxStateQueueSize);
     //Can be useful to know in which state is the player in
     public PlayerState CurrentState => stateQueue.Last();
@@ -26,6 +23,9 @@ public class StateMachine : MonoBehaviour
                 return null;
         }
     }
+
+    private Grounded lastGroundedState;
+    public Grounded LastGroundedState => lastGroundedState; 
     public Queue<PlayerState> StateQueue => stateQueue;
 
     //Whenever we change state this event will scream out loud the state we're transitioning from and the state we're transition to!
@@ -104,6 +104,10 @@ public class StateMachine : MonoBehaviour
             stateQueue.TrimExcess();
         }
 
+        //We save this as last grounded state
+        if(CurrentState is Grounded groundedState)
+            lastGroundedState = groundedState;
+
         //Old state exit
         PreviousState?.Exit();
 
@@ -116,8 +120,25 @@ public class StateMachine : MonoBehaviour
         //DEBUG
         //If a text is assigned we show the current state
         if (txt_StateDebug != null)
-            txt_StateDebug.text = newState.ToSafeString();
+            txt_StateDebug.text = newState.ToString();
     }
+
+    //FIXME: DEPRECATED
+    /// <summary>
+    /// Get the last grounded state, if the previous state is not grounded then we return the Stand state.
+    /// </summary>
+    /// <returns></returns>
+    // public Grounded GetLastGroundState()
+    // { 
+    //     for (int i = stateQueue.Count - 1; i > 0; i--)
+    //     {
+    //         PlayerState state = stateQueue.ElementAt(i);
+    //         if(state is Grounded grounded)
+    //             return grounded;
+    //     }
+
+    //     return state_Stand;   
+    // }
 
     //DEBUG (ofc)
     private void OnDrawGizmosSelected()

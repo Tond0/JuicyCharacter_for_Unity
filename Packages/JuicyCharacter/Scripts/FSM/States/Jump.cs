@@ -48,7 +48,7 @@ public class Jump : Air, IMoveableState, ILookableState
         wantToJump = true;
 
         //If we release we dont want anymore to jump
-        InputManager.OnJumpReleased += Handle_JumpReleased;
+        InputManager.OnJumpReleasedRef.Delegate += Handle_JumpReleased;
         movementComponent.BindInput();
         lookComponent.BindInput();
 
@@ -79,7 +79,7 @@ public class Jump : Air, IMoveableState, ILookableState
     private void Handle_JumpReleased()
     {
         wantToJump = false;
-        InputManager.OnJumpReleased -= Handle_JumpReleased;
+        InputManager.OnJumpReleasedRef.Delegate -= Handle_JumpReleased;
     }
 
     public override void Exit()
@@ -88,7 +88,7 @@ public class Jump : Air, IMoveableState, ILookableState
 
         movementComponent.UnbindInput();
         lookComponent.UnbindInput();
-        InputManager.OnJumpReleased -= Handle_JumpReleased;
+        InputManager.OnJumpReleasedRef.Delegate -= Handle_JumpReleased;
     }
 
     public override PlayerState Run()

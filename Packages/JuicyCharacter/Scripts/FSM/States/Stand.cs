@@ -26,9 +26,8 @@ public class Stand : Grounded, IMoveableState, ILookableState
         movementComponent.BindInput();
         lookComponent.BindInput();
 
-        InputManager.OnJumpFired += Handle_JumpFired;
-        InputManager.OnCrouchFired += Handle_CrouchFired;
-        InputManager.OnSprintFired += Handle_SprintFired;
+        InputManager.OnJumpFiredRef.Delegate += Handle_JumpFired;
+        InputManager.OnCrouchFiredRef.Delegate += Handle_CrouchFired;
     }
 
     #region Events Handler
@@ -41,15 +40,6 @@ public class Stand : Grounded, IMoveableState, ILookableState
     {
         nextState = stateMachine.State_Jump;
     }
-
-    private void Handle_SprintFired()
-    {
-        // Sprint Check
-        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
-
-        if (localVelocity.z >= minSpeedToSprint)
-            nextState = stateMachine.State_Sprint;
-    }
     #endregion
 
     public override void FixedRun()
@@ -60,6 +50,12 @@ public class Stand : Grounded, IMoveableState, ILookableState
         movementComponent.Move(stateMachine, rb, movementDirection);
 
         lookComponent.Look(stateMachine, rb);
+
+        // Sprint Check
+        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+
+        if(InputManager.current.WantsToSprint && Mathf.Abs(localVelocity.z) >= minSpeedToSprint)
+            nextState = stateMachine.State_Sprint;
     }
 
     public override void Exit()
@@ -67,9 +63,8 @@ public class Stand : Grounded, IMoveableState, ILookableState
         movementComponent.UnbindInput();
         lookComponent.UnbindInput();
 
-        InputManager.OnJumpFired -= Handle_JumpFired;
-        InputManager.OnCrouchFired -= Handle_CrouchFired;
-        InputManager.OnSprintFired -= Handle_SprintFired;
+        InputManager.OnJumpFiredRef.Delegate -= Handle_JumpFired;
+        InputManager.OnCrouchFiredRef.Delegate -= Handle_CrouchFired;
     }
 
     public override PlayerState Run()

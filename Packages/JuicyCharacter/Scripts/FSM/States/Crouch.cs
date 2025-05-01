@@ -20,6 +20,7 @@ public class Crouch : Grounded, IMoveableState, ILookableState
     [SerializeField, Tooltip("How big is going to be the boxcast for the detection?")] private float topWideCheck = 1;
     [SerializeField, Tooltip("How far is going to be the boxcast for the detection?")] private float topHeightCheck = 0.4f;
 
+    private bool wantsToStand = false;
     public override void Enter()
     {
         base.Enter();
@@ -28,9 +29,17 @@ public class Crouch : Grounded, IMoveableState, ILookableState
         lookComponent.BindInput();
 
         //Events (they all go to stand lol)
-        InputManager.OnCrouchFired += Handle_CrouchFired;
-        InputManager.OnCrouchReleased += Handle_CrouchReleased;
-        InputManager.OnJumpFired += Handle_JumpFired;
+        InputManager.OnCrouchFiredRef.Delegate += Handle_CrouchFired;
+        InputManager.OnCrouchReleasedRef.Delegate += Handle_CrouchReleased;
+        InputManager.OnJumpFiredRef.Delegate += Handle_JumpFired;
+    }
+
+    private void Handle_SprintFired()
+    {
+        //If we can stand...
+        if (!CheckTop()) return;
+        //We sprint!
+        nextState = stateMachine.State_Sprint;
     }
 
     private void Handle_CrouchFired() => TryStand();
@@ -39,8 +48,13 @@ public class Crouch : Grounded, IMoveableState, ILookableState
 
     private void TryStand()
     {
-        //If we can stand...
-        if (!CheckTop()) return;
+        //If we can't stand...
+        if (!CheckTop())
+        {
+            //Can't stand yet, but we want to stand when we can
+            wantsToStand = true;
+            return;
+        } 
         //We stand!
         nextState = stateMachine.State_Stand;
     }
@@ -53,13 +67,23 @@ public class Crouch : Grounded, IMoveableState, ILookableState
         movementComponent.Move(stateMachine, rb, movementDirection);
 
         lookComponent.Look(stateMachine, rb);
+
+        if(wantsToStand)
+        {
+            //If we can stand, we do it
+            if (CheckTop())
+            {
+                wantsToStand = false;
+                nextState = stateMachine.State_Stand;
+            }
+        }
     }
 
     /// <summary>
     /// Perform a boxcast to check if something is on top of the topHead transform
     /// </summary>
     /// <returns></returns>
-    private bool CheckTop()
+    public bool CheckTop()
     {
         Vector3 origin = topHead.position;
         Vector3 halfExtends = new(topWideCheck / 2, 0.01f, topWideCheck / 2);
@@ -73,8 +97,8 @@ public class Crouch : Grounded, IMoveableState, ILookableState
         movementComponent.UnbindInput();
         lookComponent.UnbindInput();
 
-        InputManager.OnCrouchFired -= Handle_CrouchFired;
-        InputManager.OnCrouchReleased -= Handle_CrouchReleased;
-        InputManager.OnJumpFired -= Handle_JumpFired;
+        InputManager.OnCrouchFiredRef.Delegate -= Handle_CrouchFired;
+        InputManager.OnCrouchReleasedRef.Delegate -= Handle_CrouchReleased;
+        InputManager.OnJumpFiredRef.Delegate -= Handle_JumpFired;
     }
 }

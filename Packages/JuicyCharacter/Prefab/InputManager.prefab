@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputBuffering_MaxInputs: 2
   inputBuffering_MaxInputTime: 0.3
-  itt_Jump: 0
   itt_Sprint: 0
   itt_CrouchSlide: 0
+  itt_WallRun: 0
   itt_Pause: 0
