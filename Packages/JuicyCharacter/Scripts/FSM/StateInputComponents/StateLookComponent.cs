@@ -21,10 +21,12 @@ public class StateLookComponent : StateInputComponent
     /// </summary>
     public void Look(StateMachine stateMachine, Rigidbody rb)
     {
-        Quaternion playerRot = stateMachine.transform.localRotation;
-        playerRot.y = Camera.main.transform.localRotation.y;
-        playerRot.Normalize();
-        rb.rotation = playerRot;
+        Vector3 cameraForward = Camera.main.transform.forward;
+        cameraForward.y = 0; // Keep the rotation on the horizontal plane
+        cameraForward.Normalize();
+
+        Quaternion targetRotation = Quaternion.LookRotation(cameraForward);
+        stateMachine.transform.rotation = targetRotation;
     }
 
     private void SetLookDirection(Vector2 inputDirection) => lookDirection = inputDirection;

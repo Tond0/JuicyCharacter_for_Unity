@@ -384,6 +384,10 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2265038286375363432, guid: cc732d8813ca6fb48ac4030f09e820c8, type: 3}
+      propertyPath: state_Falling.gravityForce
+      value: -14.715
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265038286375363432, guid: cc732d8813ca6fb48ac4030f09e820c8, type: 3}
       propertyPath: state_Slide.continuosForce
       value: 0.15
       objectReference: {fileID: 0}
