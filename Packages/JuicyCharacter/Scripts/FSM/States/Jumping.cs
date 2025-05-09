@@ -5,7 +5,7 @@ using System.Timers;
 using UnityEngine;
 
 [Serializable]
-public class Jump : Air, IMoveableState, ILookableState
+public class Jumping : Air, IMoveableState, ILookableState
 {
     [Header("Components")]
     [SerializeField] protected StateMovementComponent movementComponent;
@@ -168,7 +168,7 @@ public class Jump : Air, IMoveableState, ILookableState
         Grounded nextGroundedState = base.GetLastGroundState();
         
         //Jumping cancel the slide! So we don't want to get back sliding once we touch the ground again.
-        if(nextGroundedState is Slide)
+        if(nextGroundedState is Sliding)
             nextGroundedState = stateMachine.State_Sprint;
 
         return nextGroundedState;

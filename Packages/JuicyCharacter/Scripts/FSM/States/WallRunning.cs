@@ -129,7 +129,7 @@ public class WallRunning : Air, IMoveableState, ILookableState
             && !canWallRunSameWall)
                 return false;   
 
-        wallHit = currentWallHit;
+        wallHit = currentWallHit;       
 
         return isLeftRunnable || isRightRunnable;
     }
@@ -140,10 +140,6 @@ public class WallRunning : Air, IMoveableState, ILookableState
     /// <returns></returns>
     private bool CheckWallRun()
     {
-        //If we're looking the opposite direction we stop the wallrun.
-        // if(Vector3.Dot(rb.velocity.normalized, stateMachine.transform.forward.normalized) < 0)
-        //     return false;
-
         bool isLeftRunnable = CheckWallRunnableWall(-stateMachine.transform.right, out RaycastHit leftHit);
         bool isRightRunnable = CheckWallRunnableWall(stateMachine.transform.right, out RaycastHit rightHit);
 

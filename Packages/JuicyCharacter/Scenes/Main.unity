@@ -283,7 +283,8 @@ PrefabInstance:
       value: Canvas
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6367109311374016580, guid: 4b0fa516e8058c944a990fc5f0989757, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b0fa516e8058c944a990fc5f0989757, type: 3}
@@ -350,6 +351,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4490010940194449780, guid: d1338c9f24a8a4a49a6c25bd4e56b737, type: 3}
+      propertyPath: field of view
+      value: 70
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -371,6 +376,14 @@ PrefabInstance:
       propertyPath: txt_VelocityDebug
       value: 
       objectReference: {fileID: 366136450}
+    - target: {fileID: 2265038286375363432, guid: cc732d8813ca6fb48ac4030f09e820c8, type: 3}
+      propertyPath: debug_ShowWallRunCheck
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2265038286375363432, guid: cc732d8813ca6fb48ac4030f09e820c8, type: 3}
+      propertyPath: state_Wallrunning.detectionSize
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2400774770088538387, guid: cc732d8813ca6fb48ac4030f09e820c8, type: 3}
       propertyPath: m_Name
       value: Player
@@ -457,6 +470,10 @@ PrefabInstance:
       propertyPath: m_Follow
       value: 
       objectReference: {fileID: 1031318076}
+    - target: {fileID: 3348610208272284500, guid: cb0452974317fd144a5d619649dcf8ac, type: 3}
+      propertyPath: m_Lens.FieldOfView
+      value: 70
+      objectReference: {fileID: 0}
     - target: {fileID: 5640742557022278733, guid: cb0452974317fd144a5d619649dcf8ac, type: 3}
       propertyPath: rb
       value: 

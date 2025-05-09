@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class Slide : Grounded
+public class Sliding : Grounded
 {
     [SerializeField, Tooltip("Start impulse, applied once")] private float startForce;
     [SerializeField, Tooltip("The impulse applied continuosly")] private float continuosForce;

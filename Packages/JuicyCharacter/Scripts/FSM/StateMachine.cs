@@ -32,12 +32,12 @@ public class StateMachine : MonoBehaviour
     public static event Action<PlayerState, PlayerState> OnStateChange;
 
     [Header("States")]
-    [SerializeField] private Stand state_Stand;
-    [SerializeField] private Sprint state_Sprint;
-    [SerializeField] private Crouch state_Crouch;
-    [SerializeField] private Slide state_Slide;
+    [SerializeField] private Standing state_Stand;
+    [SerializeField] private Sprinting state_Sprint;
+    [SerializeField] private Crouching state_Crouch;
+    [SerializeField] private Sliding state_Slide;
     [SerializeField] private Falling state_Falling;
-    [SerializeField] private Jump state_Jump;
+    [SerializeField] private Jumping state_Jump;
     [SerializeField] private WallRunning state_Wallrunning;
 
     [Header("Debug")]
@@ -48,12 +48,12 @@ public class StateMachine : MonoBehaviour
     [SerializeField, Tooltip("Do you want to see the gizmo showing how the ground is being checked? Runtime only.")] private bool debug_ShowWallRunCheck;
 
     #region State getter
-    public Stand State_Stand { get => state_Stand; }
-    public Sprint State_Sprint { get => state_Sprint; }
-    public Slide State_Slide { get => state_Slide; }
-    public Jump State_Jump { get => state_Jump; }
+    public Standing State_Stand { get => state_Stand; }
+    public Sprinting State_Sprint { get => state_Sprint; }
+    public Sliding State_Slide { get => state_Slide; }
+    public Jumping State_Jump { get => state_Jump; }
     public Air State_Falling { get => state_Falling; }
-    public Crouch State_Crouch { get => state_Crouch; }
+    public Crouching State_Crouch { get => state_Crouch; }
     public WallRunning State_Wallrunning { get => state_Wallrunning; }
     #endregion
 

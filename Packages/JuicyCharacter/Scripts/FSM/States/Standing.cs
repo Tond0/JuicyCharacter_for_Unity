@@ -1,29 +1,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-//Does literally what stand does but we need it for clarify when it has to go to crouch or to slide!
-//(Stand) => C => (Crouch)
-//(Sprint) => C => (Slide)
 [Serializable]
-public class Sprint : Grounded, IMoveableState, ILookableState
+public class Standing : Grounded, IMoveableState, ILookableState
 {
     [Header("Components")]
-    [SerializeField] private StateMovementComponent movementComponent;
+    [SerializeField] protected StateMovementComponent movementComponent;
     public StateMovementComponent MovementComponent => movementComponent;
 
-    [SerializeField] private StateLookComponent lookComponent;
+    [SerializeField] protected StateLookComponent lookComponent;
     public StateLookComponent LookComponent => lookComponent;
 
     [Space(15)]
-    [Header("Sprint Settings")]
-    [SerializeField] private float minSpeedToSprint;
-    [SerializeField] private float minSpeedToSlide = 5;
+    [SerializeField,Tooltip("How fast should the player be to sprint?")] private float minSpeedToSprint;
+
 
     public override void Enter()
     {
         base.Enter();
+
+        // Inputs
         movementComponent.BindInput();
         lookComponent.BindInput();
 
@@ -31,17 +30,17 @@ public class Sprint : Grounded, IMoveableState, ILookableState
         InputManager.OnCrouchFiredRef.Delegate += Handle_CrouchFired;
     }
 
+    #region Events Handler
     private void Handle_CrouchFired()
     {
-        if(rb.velocity.magnitude < minSpeedToSlide) return;
-
-        nextState = stateMachine.State_Slide;
+        nextState = stateMachine.State_Crouch;
     }
 
     private void Handle_JumpFired()
     {
         nextState = stateMachine.State_Jump;
     }
+    #endregion
 
     public override void FixedRun()
     {
@@ -54,6 +53,9 @@ public class Sprint : Grounded, IMoveableState, ILookableState
 
         // Sprint Check
         Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+
+        if(InputManager.current.WantsToSprint && localVelocity.z >= minSpeedToSprint)
+            nextState = stateMachine.State_Sprint;
     }
 
     public override void Exit()
@@ -66,24 +68,9 @@ public class Sprint : Grounded, IMoveableState, ILookableState
     }
 
     public override PlayerState Run()
-    {
-        // We always check if we're running enough fast to be sprinting or walking!
-        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
-        bool canSprint = Mathf.Abs(localVelocity.z) >= minSpeedToSprint;
-
-        if(movementComponent.MovementDirection.magnitude <= 0)
-            canSprint = false;
-
-        if(!InputManager.current.WantsToSprint)
-            canSprint = false;
-
-        if (!canSprint)
-            nextState = stateMachine.State_Stand;
-
-
-        // Other input check (Higher priority)
+    {       
         base.Run();
 
         return nextState;
-    }
+    }   
 }

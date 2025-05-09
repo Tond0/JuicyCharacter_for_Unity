@@ -93,7 +93,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!136 &2272053940937443184
 CapsuleCollider:
@@ -135,7 +135,7 @@ MonoBehaviour:
     rb: {fileID: 5252726001863904785}
     groundCheckComponent:
       heightOffset: 0.8
-      heightCheckBuffer: 1.2
+      heightCheckBuffer: 1.66
       wideCheckBuffer: 1.5
     floatComponent:
       height: 1.1
@@ -177,13 +177,13 @@ MonoBehaviour:
     rb: {fileID: 5252726001863904785}
     groundCheckComponent:
       heightOffset: 0.8
-      heightCheckBuffer: 1.2
+      heightCheckBuffer: 1.66
       wideCheckBuffer: 1.5
     floatComponent:
       height: 1.1
       springStrength: 500
       dampingForce: -25
-    headBobbingFrequency: 1
+    headBobbingFrequency: 1.35
     movementComponent:
       maxSpeed: 15
       maxAcceleration: 35
@@ -220,7 +220,7 @@ MonoBehaviour:
     rb: {fileID: 5252726001863904785}
     groundCheckComponent:
       heightOffset: 0.8
-      heightCheckBuffer: 1.2
+      heightCheckBuffer: 1.5
       wideCheckBuffer: 1.5
     floatComponent:
       height: 0.5
@@ -271,11 +271,11 @@ MonoBehaviour:
       springStrength: 500
       dampingForce: -25
     headBobbingFrequency: 0
-    startForce: 15
-    continuosForce: 0
+    startForce: 20
+    continuosForce: 0.15
     maxSlopeAngle: 60
-    maxSlideDuration: 0.5
-    minSlideDuration: 0.2
+    maxSlideDuration: 1
+    minSlideDuration: 0.4
   state_Falling:
     stateMachine: {fileID: 2265038286375363432}
     rb: {fileID: 5252726001863904785}
@@ -283,9 +283,9 @@ MonoBehaviour:
       heightOffset: 0.8
       heightCheckBuffer: 1.3
       wideCheckBuffer: 1.5
-    gravityForce: -19.62
+    gravityForce: -14.715
     movementComponent:
-      maxSpeed: 0
+      maxSpeed: 10
       maxAcceleration: 15
       maxDeceleration: 25
       accelerationFactor:
@@ -322,7 +322,7 @@ MonoBehaviour:
       wideCheckBuffer: 1.5
     gravityForce: -9.8
     movementComponent:
-      maxSpeed: 0
+      maxSpeed: 15
       maxAcceleration: 15
       maxDeceleration: 25
       accelerationFactor:
@@ -352,7 +352,7 @@ MonoBehaviour:
       maxCameraDutch: 3.5
     jumpForce: 10
     airtTime_AccelMultiplier: 1.2
-    coyoteTime: 0.3
+    coyoteTime: 0.2
     maxJumpDuration: 1
     minJumpDuration: 0.2
     topHeightThreshold: 7
@@ -404,7 +404,7 @@ MonoBehaviour:
   txt_StateDebug: {fileID: 0}
   rb_debug: {fileID: 5252726001863904785}
   txt_VelocityDebug: {fileID: 0}
-  debug_ShowGroundCheck: 0
+  debug_ShowGroundCheck: 1
   debug_ShowWallRunCheck: 0
 --- !u!1 &2740134081809484959
 GameObject:

@@ -56,6 +56,7 @@ public class CinemachineHeadBobber : CinemachinePlayerExtension
             default:
                 //let's cancel the head bob by setting the frequency to 0
                 noiseVCam.m_FrequencyGain = 0;
+                noiseVCam.m_NoiseProfile = null;
             break;
         }
     }

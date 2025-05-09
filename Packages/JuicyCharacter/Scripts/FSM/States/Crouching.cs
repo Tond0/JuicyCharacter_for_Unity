@@ -6,7 +6,7 @@ using static UnityEngine.UI.Image;
 
 
 [Serializable]
-public class Crouch : Grounded, IMoveableState, ILookableState
+public class Crouching : Grounded, IMoveableState, ILookableState
 {
     [Header("Components")]
     [SerializeField] private StateMovementComponent movementComponent;
