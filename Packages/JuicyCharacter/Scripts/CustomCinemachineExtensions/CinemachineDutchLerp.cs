@@ -48,7 +48,9 @@ public class CinemachineDutchLerp : CinemachinePlayerExtension
 
     protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
     {
-        if(stateComponent.CurrentState is WallRunning WallRunningState)
+        if (!Application.isPlaying) return;
+
+        if (stateComponent.CurrentState is WallRunning WallRunningState)
         {
             state.Lens.Dutch = targetDutch * WallRunningState.GetDutchWallrunningDirection();
             return;

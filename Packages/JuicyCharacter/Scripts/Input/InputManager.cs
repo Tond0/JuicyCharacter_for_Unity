@@ -12,11 +12,8 @@ public class ActionRef
     public Action Delegate;
 }
 
-public class InputManager : MonoBehaviour, Controls.IGameplayActions
-{
-    // The input action asset class we defined.
-    private Controls inputAction;
-
+public class InputManager : MonoBehaviour
+{   
     // Input events wrapper
     public static event Action<Vector2> OnMoveFired;
 
@@ -67,11 +64,6 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
 
     private void OnEnable()
     {
-        // Input setup
-        inputAction = new Controls();
-        inputAction.Enable();
-        inputAction.Gameplay.SetCallbacks(this);
-
         // Cursor settings
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -82,7 +74,6 @@ public class InputManager : MonoBehaviour, Controls.IGameplayActions
 
     private void OnDisable()
     {
-        inputAction.Disable();
         StateMachine.OnStateChange -= CallBuffer;
     }
 
